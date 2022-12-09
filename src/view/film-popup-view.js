@@ -1,8 +1,7 @@
 import {createElement} from '../render.js';
 
-function createFilmPopupTemplate() {
-  return (
-    `<section class="film-details">
+const createFilmPopupTemplate = () => (
+  `<section class="film-details">
       <div class="film-details__inner">
         <div class="film-details__top-container">
           <div class="film-details__close">
@@ -167,8 +166,7 @@ function createFilmPopupTemplate() {
         </div>
       </div>
     </section>`
-  );
-}
+);
 
 export default class FilmPopupView {
   getTemplate() {

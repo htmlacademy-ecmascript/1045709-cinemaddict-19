@@ -1,8 +1,6 @@
 import {createElement} from '../render.js';
 
-function createStatisticTemplate() {
-  return '<p>130 291 movies inside</p>';
-}
+const createStatisticTemplate = () => '<p>130 291 movies inside</p>';
 
 export default class QuantityStatisticsView {
   getTemplate() {
