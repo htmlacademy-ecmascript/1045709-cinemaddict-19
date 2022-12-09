@@ -1,4 +1,4 @@
-import { getRandomFilm } from '../mock/film';
+import { getRandomFilm } from '../mock/film.js';
 
 const FILMS_COUNT = 5;
 

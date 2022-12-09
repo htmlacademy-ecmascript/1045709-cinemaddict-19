@@ -1,4 +1,4 @@
-import { getRandomArrayElement } from '../utils';
+import { getRandomArrayElement } from '../utils.js';
 import { POSTERS, GENRES, EMOTIONS } from '../const.js';
 
 const mockComments = [
