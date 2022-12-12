@@ -43,7 +43,7 @@ const mockFilms = [
   {
     id: 1,
     src: `./images/posters/${getRandomArrayElement(POSTERS)}`,
-    mockComments: [1],
+    comments: [1],
     filmInfo: {
       title: 'Title',
       rating: 5.4,
@@ -61,7 +61,7 @@ const mockFilms = [
   {
     id: 2,
     src: `./images/posters/${getRandomArrayElement(POSTERS)}`,
-    mockComments: [2],
+    comments: [2],
     filmInfo: {
       title: 'Title',
       rating: 5.4,
@@ -79,7 +79,7 @@ const mockFilms = [
   {
     id: 3,
     src: `./images/posters/${getRandomArrayElement(POSTERS)}`,
-    mockComments: [2, 3],
+    comments: [2, 3],
     filmInfo: {
       title: 'Title',
       rating: 5.4,
@@ -97,7 +97,7 @@ const mockFilms = [
   {
     id: 4,
     src: `./images/posters/${getRandomArrayElement(POSTERS)}`,
-    mockComments: [4, 5],
+    comments: [4, 5],
     filmInfo: {
       title: 'Title',
       rating: 5.4,
@@ -115,7 +115,7 @@ const mockFilms = [
   {
     id: 5,
     src: `./images/posters/${getRandomArrayElement(POSTERS)}`,
-    mockComments: [5, 3],
+    comments: [5, 3],
     filmInfo: {
       title: 'Title',
       rating: 5.4,
