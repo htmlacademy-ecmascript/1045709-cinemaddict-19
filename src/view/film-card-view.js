@@ -1,16 +1,22 @@
-import {createElement} from '../render.js';
+import { createElement } from '../render.js';
+import { humanizeDate } from '../utils.js';
+import { FILM_CARD_DATE_FORMAT } from '../const.js';
 
 const createFilmCardTemplate = (film) => {
   const {comments} = film;
   const {title, totalRating, poster, duration, genre, description} = film.filmInfo;
   const {alreadyWatched, favorite, watchlist} = film.userDetails;
+  const {date} = film.filmInfo.release;
+
+  const dateMarkup = humanizeDate(date, FILM_CARD_DATE_FORMAT);
+
   return (
     `<article class="film-card">
       <a class="film-card__link">
         <h3 class="film-card__title">${title}</h3>
         <p class="film-card__rating">${totalRating}</p>
         <p class="film-card__info">
-          <span class="film-card__year">${'dayjs'}</span>
+          <span class="film-card__year">${dateMarkup}</span>
           <span class="film-card__duration">${duration}</span>
           <span class="film-card__genre">${genre}</span>
         </p>

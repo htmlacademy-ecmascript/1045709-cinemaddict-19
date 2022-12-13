@@ -1,8 +1,13 @@
-import {createElement} from '../render.js';
+import { createElement } from '../render.js';
+import { humanizeDate } from '../utils.js';
+import { FILM_POPUP_DATE_FORMAT, FILM_COMMENT_DATE_FORMAT } from '../const.js';
 
 const createFilmPopupTemplate = (film, comments) =>{
   const {title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, duration, genre, description} = film.filmInfo;
   const {alreadyWatched, favorite, watchlist} = film.userDetails;
+
+  const releaseDateMarkup = humanizeDate(film.filmInfo.release.date, FILM_POPUP_DATE_FORMAT);
+
   return (
     `<section class="film-details">
       <div class="film-details__inner">
@@ -40,7 +45,7 @@ const createFilmPopupTemplate = (film, comments) =>{
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
-                  <td class="film-details__cell">30 March ${'dayjs'}</td>
+                  <td class="film-details__cell">${releaseDateMarkup}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Duration</td>
@@ -90,7 +95,7 @@ const createFilmPopupTemplate = (film, comments) =>{
                 <p class="film-details__comment-text">${comment.comment}</p>
                 <p class="film-details__comment-info">
                   <span class="film-details__comment-author">${comment.author}</span>
-                  <span class="film-details__comment-day">${'dayjs'}</span>
+                  <span class="film-details__comment-day">${humanizeDate(comment.date, FILM_COMMENT_DATE_FORMAT)}</span>
                   <button class="film-details__comment-delete">Delete</button>
                 </p>
               </div>

@@ -57,7 +57,7 @@ const mockFilms = [
         'Morgan'
       ],
       release: {
-        date: '2019-05-11T00:00:00.000Z',
+        date: '2009-01-16T00:00:00.000Z',
       },
       duration: '55m',
       genre: getRandomArrayElement(GENRES),
@@ -86,7 +86,7 @@ const mockFilms = [
         'Soko'
       ],
       release: {
-        date: '2019-05-11T00:00:00.000Z',
+        date: '2015-02-21T00:00:00.000Z',
       },
       duration: '1h 55m',
       genre: getRandomArrayElement(GENRES),
@@ -115,7 +115,7 @@ const mockFilms = [
         'Asoti'
       ],
       release: {
-        date: '2019-05-11T00:00:00.000Z',
+        date: '2017-09-17T00:00:00.000Z',
       },
       duration: '1h 35m',
       genre: getRandomArrayElement(GENRES),
@@ -145,7 +145,7 @@ const mockFilms = [
         'Freeman'
       ],
       release: {
-        date: '2019-05-11T00:00:00.000Z',
+        date: '2013-03-13T00:00:00.000Z',
       },
       duration: '3h',
       genre: getRandomArrayElement(GENRES),
