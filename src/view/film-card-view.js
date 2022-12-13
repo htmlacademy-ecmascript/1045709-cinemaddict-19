@@ -1,20 +1,20 @@
 import {createElement} from '../render.js';
 
 const createFilmCardTemplate = (film) => {
-  const {src, comments} = film;
-  const {title, rating, year, duration, genre, description} = film.filmInfo;
+  const {comments} = film;
+  const {title, totalRating, poster, duration, genre, description} = film.filmInfo;
   const {alreadyWatched, favorite, watchlist} = film.userDetails;
   return (
     `<article class="film-card">
       <a class="film-card__link">
         <h3 class="film-card__title">${title}</h3>
-        <p class="film-card__rating">${rating}</p>
+        <p class="film-card__rating">${totalRating}</p>
         <p class="film-card__info">
-          <span class="film-card__year">${year}</span>
+          <span class="film-card__year">${'dayjs'}</span>
           <span class="film-card__duration">${duration}</span>
           <span class="film-card__genre">${genre}</span>
         </p>
-        <img src="${src}" alt="" class="film-card__poster">
+        <img src="${poster}" alt="" class="film-card__poster">
         <p class="film-card__description">${description}</p>
         <span class="film-card__comments">${comments.length} comments</span>
       </a>

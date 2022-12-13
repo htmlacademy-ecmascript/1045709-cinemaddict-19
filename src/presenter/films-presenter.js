@@ -19,6 +19,7 @@ export default class FilmsPresenter {
 
   init() {
     this.films = [...this.filmsModel.getFilms()];
+    this.comments = [...this.filmsModel.getComments()];
 
     render(this.filmSectionComponent, this.filmsContainer);
     render(this.filmListComponent, this.filmSectionComponent.getElement());
@@ -31,5 +32,7 @@ export default class FilmsPresenter {
     render(new ShowMoreBtnView(), this.filmListComponent.getElement());
     render(new TopRatedView(), this.filmSectionComponent.getElement());
     render(new MostCommentedView(), this.filmSectionComponent.getElement());
+
   }
+
 }
