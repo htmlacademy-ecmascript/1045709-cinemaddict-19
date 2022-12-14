@@ -1,8 +1,7 @@
 import {createElement} from '../render.js';
 
-function createMostCommentedTemplate() {
-  return (
-    `<section class="films-list films-list--extra">
+const createMostCommentedTemplate = () => (
+  `<section class="films-list films-list--extra">
       <h2 class="films-list__title">Most commented</h2>
 
       <div class="films-list__container">
@@ -47,8 +46,7 @@ function createMostCommentedTemplate() {
         </article>
       </div>
     </section>`
-  );
-}
+);
 
 export default class MostCommentedView {
   getTemplate() {
