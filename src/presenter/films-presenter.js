@@ -31,13 +31,19 @@ export default class FilmsPresenter {
     render(this.#filmListContainerComponent, this.#filmListComponent.element);
 
     for (let i = 0; i < this.#films.length; i++) {
-      render(new FilmCardView({film: this.#films[i]}), this.#filmListContainerComponent.element);
+      this.#renderFilm(this.#films[i]);
     }
 
     render(new ShowMoreBtnView(), this.#filmListComponent.element);
     render(new TopRatedView(), this.#filmSectionComponent.element);
     render(new MostCommentedView(), this.#filmSectionComponent.element);
 
+  }
+
+  #renderFilm(film) {
+    const filmComponent = new FilmCardView({film});
+
+    render(filmComponent, this.#filmListContainerComponent.element);
   }
 
 }
