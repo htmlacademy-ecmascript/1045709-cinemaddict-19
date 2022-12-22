@@ -1,17 +1,16 @@
-import { getRandomFilm, getRandomComment } from '../mock/film.js';
+import { mockComments, getRandomFilm } from '../mock/film.js';
 
 const FILMS_COUNT = 5;
-const COMMENTS_COUNT = 5;
 
 export default class FilmsModel {
-  films = Array.from({length: FILMS_COUNT}, getRandomFilm);
-  comments = Array.from({length: COMMENTS_COUNT}, getRandomComment);
+  #films = Array.from({length: FILMS_COUNT}, getRandomFilm);
+  #comments = mockComments;
 
-  getFilms() {
-    return this.films;
+  get films() {
+    return this.#films;
   }
 
-  getComments() {
-    return this.comments;
+  get comments() {
+    return this.#comments;
   }
 }

@@ -1,5 +1,5 @@
 import { getRandomArrayElement } from '../utils.js';
-import { POSTERS, GENRES, EMOTIONS } from '../const.js';
+import { POSTERS, GENRES, EMOTIONS } from '../consts.js';
 
 const mockComments = [
   {
@@ -191,6 +191,4 @@ const mockFilms = [
 
 const getRandomFilm = () => getRandomArrayElement(mockFilms);
 
-const getRandomComment = () => getRandomArrayElement(mockComments);
-
-export { getRandomFilm, getRandomComment };
+export { mockComments, getRandomFilm };

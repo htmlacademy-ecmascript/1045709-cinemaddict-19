@@ -1,27 +1,36 @@
-import { render } from '../render.js';
-import { getRandomArrayElement } from '../utils.js';
 import FilmPopupView from '../view/film-popup-view.js';
 
 export default class FilmPopupPresenter {
+  #filmPopupComponent = null;
+  #closeBtn = null;
 
-  constructor({ popupContainer, filmsModel }) {
-    this.popupContainer = popupContainer;
-    this.filmsModel = filmsModel;
-  }
-
-  init() {
-    this.film = getRandomArrayElement(this.filmsModel.getFilms());
-    this.comments = this.filmsModel.getComments().filter((comment) => this.film.comments.includes(comment.id));
+  constructor({ film, filmComments }) {
+    this.#filmPopupComponent = new FilmPopupView({film, filmComments});
+    this.#closeBtn = this.#filmPopupComponent.element.querySelector('.film-details__close-btn');
   }
 
   showPopup() {
-    render(
-      new FilmPopupView({
-        film: this.film,
-        comments: this.comments
-      }),
-      this.popupContainer
-    );
+    document.body.classList.add('hide-overflow');
+    document.body.appendChild(this.#filmPopupComponent.element);
+    this.#closeBtn.addEventListener('click', this.#closePopupClickHandler);
+    document.addEventListener('keydown', this.#closePopupKeydownHandler);
   }
+
+  closePopup() {
+    document.body.classList.remove('hide-overflow');
+    document.body.removeChild(this.#filmPopupComponent.element);
+    this.#closeBtn.removeEventListener('click', this.#closePopupClickHandler);
+    document.removeEventListener('keydown', this.#closePopupKeydownHandler);
+  }
+
+  #closePopupClickHandler = () => {
+    this.closePopup();
+  };
+
+  #closePopupKeydownHandler = (evt) => {
+    if (evt.code === 'Escape') {
+      this.closePopup();
+    }
+  };
 
 }

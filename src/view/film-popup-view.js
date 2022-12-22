@@ -1,6 +1,6 @@
 import { createElement } from '../render.js';
 import { humanizeDate } from '../utils.js';
-import { FILM_POPUP_DATE_FORMAT, FILM_COMMENT_DATE_FORMAT } from '../const.js';
+import { FILM_POPUP_DATE_FORMAT, FILM_COMMENT_DATE_FORMAT } from '../consts.js';
 
 const createFilmPopupTemplate = (film, comments) =>{
   const {title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, duration, genre, description} = film.filmInfo;
@@ -139,24 +139,28 @@ const createFilmPopupTemplate = (film, comments) =>{
 };
 
 export default class FilmPopupView {
-  constructor({film, comments}) {
-    this.film = film;
-    this.comments = comments;
+  #film = null;
+  #filmComments = null;
+  #element = null;
+
+  constructor({film, filmComments}) {
+    this.#film = film;
+    this.#filmComments = filmComments;
   }
 
-  getTemplate() {
-    return createFilmPopupTemplate(this.film, this.comments);
+  get template() {
+    return createFilmPopupTemplate(this.#film, this.#filmComments);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
