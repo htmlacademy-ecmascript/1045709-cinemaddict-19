@@ -140,16 +140,16 @@ const createFilmPopupTemplate = (film, comments) =>{
 
 export default class FilmPopupView {
   #film = null;
-  #comments = null;
+  #filmComments = null;
   #element = null;
 
-  constructor({film, comments}) {
+  constructor({film, filmComments}) {
     this.#film = film;
-    this.#comments = comments;
+    this.#filmComments = filmComments;
   }
 
   get template() {
-    return createFilmPopupTemplate(this.#film, this.#comments);
+    return createFilmPopupTemplate(this.#film, this.#filmComments);
   }
 
   get element() {

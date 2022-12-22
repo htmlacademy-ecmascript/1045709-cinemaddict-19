@@ -6,6 +6,7 @@ import FilmCardView from '../view/film-card-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
 import TopRatedView from '../view/extra-top-rated-view.js';
 import MostCommentedView from '../view/extra-most-commented-view.js';
+import FilmPopupPresenter from './film-popup-presenter.js';
 
 export default class FilmsPresenter {
   #filmSectionComponent = new FilmSectionView();
@@ -15,7 +16,6 @@ export default class FilmsPresenter {
   #filmsModel = null;
 
   #films = [];
-  #comments = [];
 
   constructor({filmsContainer, filmsModel}) {
     this.#filmsContainer = filmsContainer;
@@ -24,7 +24,6 @@ export default class FilmsPresenter {
 
   init() {
     this.#films = [...this.#filmsModel.films];
-    this.#comments = [...this.#filmsModel.comments];
 
     render(this.#filmSectionComponent, this.#filmsContainer);
     render(this.#filmListComponent, this.#filmSectionComponent.element);
@@ -41,7 +40,13 @@ export default class FilmsPresenter {
   }
 
   #renderFilm(film) {
+    const filmComments = this.#filmsModel.comments.filter((comment) => film.comments.includes(comment.id));
     const filmComponent = new FilmCardView({film});
+    const filmPopupPresenter = new FilmPopupPresenter({film, filmComments});
+
+    filmComponent.element.querySelector('.film-card__link').addEventListener('click', () => {
+      filmPopupPresenter.showPopup();
+    });
 
     render(filmComponent, this.#filmListContainerComponent.element);
   }

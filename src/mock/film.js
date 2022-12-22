@@ -191,6 +191,4 @@ const mockFilms = [
 
 const getRandomFilm = () => getRandomArrayElement(mockFilms);
 
-const getRandomComment = () => getRandomArrayElement(mockComments);
-
-export { getRandomFilm, getRandomComment };
+export { mockComments, getRandomFilm };
