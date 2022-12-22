@@ -1,6 +1,6 @@
 import { createElement } from '../render.js';
 import { humanizeDate } from '../utils.js';
-import { FILM_CARD_DATE_FORMAT } from '../const.js';
+import { FILM_CARD_DATE_FORMAT } from '../consts.js';
 
 const createFilmCardTemplate = (film) => {
   const {comments} = film;

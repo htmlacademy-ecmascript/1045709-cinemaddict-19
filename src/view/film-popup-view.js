@@ -1,6 +1,6 @@
 import { createElement } from '../render.js';
 import { humanizeDate } from '../utils.js';
-import { FILM_POPUP_DATE_FORMAT, FILM_COMMENT_DATE_FORMAT } from '../const.js';
+import { FILM_POPUP_DATE_FORMAT, FILM_COMMENT_DATE_FORMAT } from '../consts.js';
 
 const createFilmPopupTemplate = (film, comments) =>{
   const {title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, duration, genre, description} = film.filmInfo;

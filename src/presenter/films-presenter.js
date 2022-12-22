@@ -1,4 +1,4 @@
-import {render} from '../render.js';
+import { render } from '../render.js';
 import FilmSectionView from '../view/film-section-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
@@ -29,8 +29,8 @@ export default class FilmsPresenter {
     render(this.#filmListComponent, this.#filmSectionComponent.element);
     render(this.#filmListContainerComponent, this.#filmListComponent.element);
 
-    for (let i = 0; i < this.#films.length; i++) {
-      this.#renderFilm(this.#films[i]);
+    for (const film of this.#films) {
+      this.#renderFilm(film);
     }
 
     render(new ShowMoreBtnView(), this.#filmListComponent.element);
