@@ -1,4 +1,5 @@
 import { render } from '../render.js';
+import { DEFAULT_RENDERED_FILMS_QUANTITY, FILMS_TO_RENDER_QUANTITY } from '../consts.js';
 import FilmSectionView from '../view/film-section-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
@@ -12,10 +13,12 @@ export default class FilmsPresenter {
   #filmSectionComponent = new FilmSectionView();
   #filmListContainerComponent = new FilmListContainerView();
   #filmListComponent = new FilmListView();
+  #filmShowMoreBtnComponent = new ShowMoreBtnView();
   #filmsContainer = null;
   #filmsModel = null;
 
   #films = [];
+  #renderedFilmsCollection = this.#filmListContainerComponent.element.children;
 
   constructor({filmsContainer, filmsModel}) {
     this.#filmsContainer = filmsContainer;
@@ -29,14 +32,28 @@ export default class FilmsPresenter {
     render(this.#filmListComponent, this.#filmSectionComponent.element);
     render(this.#filmListContainerComponent, this.#filmListComponent.element);
 
-    for (const film of this.#films) {
-      this.#renderFilm(film);
-    }
+    this.#renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
 
-    render(new ShowMoreBtnView(), this.#filmListComponent.element);
+    this.#filmShowMoreBtnComponent.element.addEventListener('click', () => {
+      this.#renderFilms(FILMS_TO_RENDER_QUANTITY);
+    });
+
+    render(this.#filmShowMoreBtnComponent, this.#filmListComponent.element);
     render(new TopRatedView(), this.#filmSectionComponent.element);
     render(new MostCommentedView(), this.#filmSectionComponent.element);
 
+  }
+
+  #renderFilms(toRenderQuantity) {
+    const renderedFilmsQuantity = this.#renderedFilmsCollection.length;
+    for (let i = renderedFilmsQuantity; i < renderedFilmsQuantity + toRenderQuantity; i++) {
+      this.#renderFilm(this.#films[i]);
+      const isLastFilm = !this.#films[this.#renderedFilmsCollection.length];
+      if (isLastFilm) {
+        this.#filmShowMoreBtnComponent.element.style.display = 'none';
+        return;
+      }
+    }
   }
 
   #renderFilm(film) {
