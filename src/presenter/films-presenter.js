@@ -3,6 +3,7 @@ import { DEFAULT_RENDERED_FILMS_QUANTITY, FILMS_TO_RENDER_QUANTITY } from '../co
 import FilmSectionView from '../view/film-section-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
+import EmptyFilmListView from '../view/empty-film-list-view.js';
 import FilmCardView from '../view/film-card-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
 import TopRatedView from '../view/extra-top-rated-view.js';
@@ -27,10 +28,14 @@ export default class FilmsPresenter {
 
   init() {
     this.#films = [...this.#filmsModel.films];
-
     render(this.#filmSectionComponent, this.#filmsContainer);
     render(this.#filmListComponent, this.#filmSectionComponent.element);
     render(this.#filmListContainerComponent, this.#filmListComponent.element);
+
+    if (this.#films.length === 0) {
+      render(new EmptyFilmListView(document.querySelector('.main-navigation__item--active').dataset.id), this.#filmSectionComponent.element);
+      return;
+    }
 
     this.#renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
 
