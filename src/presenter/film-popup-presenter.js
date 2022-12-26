@@ -1,5 +1,7 @@
 import FilmPopupView from '../view/film-popup-view.js';
 
+let openedPopup = null;
+
 export default class FilmPopupPresenter {
   #filmPopupComponent = null;
   #closeBtn = null;
@@ -10,10 +12,14 @@ export default class FilmPopupPresenter {
   }
 
   showPopup() {
+    if (openedPopup) {
+      openedPopup.closePopup();
+    }
     document.body.classList.add('hide-overflow');
     document.body.appendChild(this.#filmPopupComponent.element);
     this.#closeBtn.addEventListener('click', this.#closePopupClickHandler);
     document.addEventListener('keydown', this.#closePopupKeydownHandler);
+    openedPopup = this;
   }
 
   closePopup() {
@@ -21,6 +27,7 @@ export default class FilmPopupPresenter {
     document.body.removeChild(this.#filmPopupComponent.element);
     this.#closeBtn.removeEventListener('click', this.#closePopupClickHandler);
     document.removeEventListener('keydown', this.#closePopupKeydownHandler);
+    openedPopup = null;
   }
 
   #closePopupClickHandler = () => {
