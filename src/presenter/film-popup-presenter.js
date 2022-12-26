@@ -1,4 +1,5 @@
 import FilmPopupView from '../view/film-popup-view.js';
+import { isEscPressed } from '../utils.js';
 
 let openedPopup = null;
 
@@ -35,7 +36,7 @@ export default class FilmPopupPresenter {
   };
 
   #closePopupKeydownHandler = (evt) => {
-    if (evt.code === 'Escape') {
+    if (isEscPressed(evt)) {
       this.closePopup();
     }
   };

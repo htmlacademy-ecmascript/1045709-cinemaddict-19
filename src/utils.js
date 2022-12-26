@@ -4,4 +4,6 @@ const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.
 
 const humanizeDate = (date, format) => date ? dayjs(date).format(format) : '';
 
-export { getRandomArrayElement, humanizeDate };
+const isEscPressed = (evt) => evt.code === 'Escape';
+
+export { getRandomArrayElement, humanizeDate, isEscPressed };
