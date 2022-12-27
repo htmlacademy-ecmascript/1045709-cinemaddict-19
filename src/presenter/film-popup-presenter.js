@@ -1,4 +1,7 @@
 import FilmPopupView from '../view/film-popup-view.js';
+import { isEscPressed } from '../utils.js';
+
+let openedPopup = null;
 
 export default class FilmPopupPresenter {
   #filmPopupComponent = null;
@@ -10,10 +13,14 @@ export default class FilmPopupPresenter {
   }
 
   showPopup() {
+    if (openedPopup) {
+      openedPopup.closePopup();
+    }
     document.body.classList.add('hide-overflow');
     document.body.appendChild(this.#filmPopupComponent.element);
     this.#closeBtn.addEventListener('click', this.#closePopupClickHandler);
     document.addEventListener('keydown', this.#closePopupKeydownHandler);
+    openedPopup = this;
   }
 
   closePopup() {
@@ -21,6 +28,7 @@ export default class FilmPopupPresenter {
     document.body.removeChild(this.#filmPopupComponent.element);
     this.#closeBtn.removeEventListener('click', this.#closePopupClickHandler);
     document.removeEventListener('keydown', this.#closePopupKeydownHandler);
+    openedPopup = null;
   }
 
   #closePopupClickHandler = () => {
@@ -28,7 +36,7 @@ export default class FilmPopupPresenter {
   };
 
   #closePopupKeydownHandler = (evt) => {
-    if (evt.code === 'Escape') {
+    if (isEscPressed(evt)) {
       this.closePopup();
     }
   };
