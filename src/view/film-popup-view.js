@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDate } from '../utils.js';
 import { FILM_POPUP_DATE_FORMAT, FILM_COMMENT_DATE_FORMAT } from '../consts.js';
 
@@ -138,12 +138,12 @@ const createFilmPopupTemplate = (film, comments) =>{
   );
 };
 
-export default class FilmPopupView {
+export default class FilmPopupView extends AbstractView {
   #film = null;
   #filmComments = null;
-  #element = null;
 
   constructor({film, filmComments}) {
+    super();
     this.#film = film;
     this.#filmComments = filmComments;
   }
@@ -152,15 +152,4 @@ export default class FilmPopupView {
     return createFilmPopupTemplate(this.#film, this.#filmComments);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
 }

@@ -2,7 +2,7 @@ import UserRankView from './view/user-rank-view.js';
 import FiltersView from './view/filters-view.js';
 import SortView from './view/sort-view.js';
 import QuantityStatisticsView from './view/quantity-statistics-view.js';
-import { render } from './render.js';
+import { render } from './framework/render.js';
 import FilmsPresenter from './presenter/films-presenter.js';
 import FilmsModel from './model/films-model.js';
 
