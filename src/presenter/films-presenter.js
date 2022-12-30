@@ -1,4 +1,4 @@
-import { render } from '../render.js';
+import { render } from '../framework/render.js';
 import { DEFAULT_RENDERED_FILMS_QUANTITY, FILMS_TO_RENDER_QUANTITY } from '../consts.js';
 import FilmSectionView from '../view/film-section-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
@@ -14,7 +14,7 @@ export default class FilmsPresenter {
   #filmSectionComponent = new FilmSectionView();
   #filmListContainerComponent = new FilmListContainerView();
   #filmListComponent = new FilmListView();
-  #filmShowMoreBtnComponent = new ShowMoreBtnView();
+  #filmShowMoreBtnComponent = null;
   #filmsContainer = null;
   #filmsModel = null;
 
@@ -39,10 +39,6 @@ export default class FilmsPresenter {
 
     this.#renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
 
-    this.#filmShowMoreBtnComponent.element.addEventListener('click', () => {
-      this.#renderFilms(FILMS_TO_RENDER_QUANTITY);
-    });
-
     render(this.#filmShowMoreBtnComponent, this.#filmListComponent.element);
     render(new TopRatedView(), this.#filmSectionComponent.element);
     render(new MostCommentedView(), this.#filmSectionComponent.element);
@@ -50,6 +46,9 @@ export default class FilmsPresenter {
   }
 
   #renderFilms(toRenderQuantity) {
+    this.#filmShowMoreBtnComponent = new ShowMoreBtnView({
+      onClick: this.#handleLoadMoreButtonClick
+    });
     const renderedFilmsQuantity = this.#renderedFilmsCollection.length;
     for (let i = renderedFilmsQuantity; i < renderedFilmsQuantity + toRenderQuantity; i++) {
       this.#renderFilm(this.#films[i]);
@@ -63,14 +62,20 @@ export default class FilmsPresenter {
 
   #renderFilm(film) {
     const filmComments = this.#filmsModel.comments.filter((comment) => film.comments.includes(comment.id));
-    const filmComponent = new FilmCardView({film});
     const filmPopupPresenter = new FilmPopupPresenter({film, filmComments});
-
-    filmComponent.element.querySelector('.film-card__link').addEventListener('click', () => {
-      filmPopupPresenter.showPopup();
+    const filmCardComponent = new FilmCardView({
+      film,
+      onClick: () => {
+        filmPopupPresenter.showPopup();
+      }
     });
 
-    render(filmComponent, this.#filmListContainerComponent.element);
+    render(filmCardComponent, this.#filmListContainerComponent.element);
   }
+
+  #handleLoadMoreButtonClick = () => {
+    this.#renderFilms(FILMS_TO_RENDER_QUANTITY);
+  };
+
 
 }

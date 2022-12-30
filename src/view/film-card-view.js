@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDate } from '../utils.js';
 import { FILM_CARD_DATE_FORMAT } from '../consts.js';
 
@@ -33,27 +33,24 @@ const createFilmCardTemplate = (film) => {
   );
 };
 
-export default class FilmCardView {
+export default class FilmCardView extends AbstractView {
   #film = null;
-  #element = null;
+  #handleClick = null;
 
-  constructor({film}) {
+  constructor({film, onClick}) {
+    super();
     this.#film = film;
+    this.#handleClick = onClick;
+    this.element.querySelector('.film-card__link').addEventListener('click', this.#clickHandler);
   }
 
   get template() {
     return createFilmCardTemplate(this.#film);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleClick();
+  };
 
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
 }
