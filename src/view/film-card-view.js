@@ -48,8 +48,7 @@ export default class FilmCardView extends AbstractView {
     return createFilmCardTemplate(this.#film);
   }
 
-  #clickHandler = (evt) => {
-    evt.preventDefault();
+  #clickHandler = () => {
     this.#handleClick();
   };
 

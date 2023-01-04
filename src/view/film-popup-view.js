@@ -156,8 +156,7 @@ export default class FilmPopupView extends AbstractView {
     return createFilmPopupTemplate(this.#film, this.#filmComments);
   }
 
-  #closeClickHanlder = (evt) => {
-    evt.preventDefault();
+  #closeClickHanlder = () => {
     this.#handleCloseClick();
   };
 
