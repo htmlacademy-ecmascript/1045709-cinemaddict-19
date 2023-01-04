@@ -28,6 +28,9 @@ export default class FilmsPresenter {
 
   init() {
     this.#films = [...this.#filmsModel.films];
+    this.#filmShowMoreBtnComponent = new ShowMoreBtnView({
+      onClick: this.#handleLoadMoreButtonClick
+    });
     render(this.#filmSectionComponent, this.#filmsContainer);
     render(this.#filmListComponent, this.#filmSectionComponent.element);
     render(this.#filmListContainerComponent, this.#filmListComponent.element);
@@ -46,9 +49,6 @@ export default class FilmsPresenter {
   }
 
   #renderFilms(toRenderQuantity) {
-    this.#filmShowMoreBtnComponent = new ShowMoreBtnView({
-      onClick: this.#handleLoadMoreButtonClick
-    });
     const renderedFilmsQuantity = this.#renderedFilmsCollection.length;
     for (let i = renderedFilmsQuantity; i < renderedFilmsQuantity + toRenderQuantity; i++) {
       this.#renderFilm(this.#films[i]);
