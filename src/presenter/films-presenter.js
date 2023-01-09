@@ -17,13 +17,15 @@ export default class FilmsPresenter {
   #filmShowMoreBtnComponent = null;
   #filmsContainer = null;
   #filmsModel = null;
+  #filmFilters = null;
 
   #films = [];
   #renderedFilmsCollection = this.#filmListContainerComponent.element.children;
 
-  constructor({filmsContainer, filmsModel}) {
+  constructor({filmsContainer, filmsModel, filmFilters}) {
     this.#filmsContainer = filmsContainer;
     this.#filmsModel = filmsModel;
+    this.#filmFilters = filmFilters;
   }
 
   init() {
@@ -36,7 +38,8 @@ export default class FilmsPresenter {
     render(this.#filmListContainerComponent, this.#filmListComponent.element);
 
     if (this.#films.length === 0) {
-      render(new EmptyFilmListView(document.querySelector('.main-navigation__item--active').dataset.id), this.#filmSectionComponent.element);
+      const activeFilter = document.querySelector('.main-navigation__item--active').dataset.id;
+      render(new EmptyFilmListView(this.#filmFilters, activeFilter), this.#filmSectionComponent.element);
       return;
     }
 
