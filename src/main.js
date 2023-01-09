@@ -13,6 +13,7 @@ const siteFooter = document.querySelector('.footer__statistics');
 
 const filmsModel = new FilmsModel();
 const filmFilters = generateFilmFilters(filmsModel.films);
+const filmsQuantity = filmsModel.films.length.toLocaleString();
 const filmsPresenter = new FilmsPresenter({
   filmsContainer: siteMain,
   filmsModel,
@@ -23,6 +24,6 @@ const filmsPresenter = new FilmsPresenter({
 render(new UserRankView(), siteHeader);
 render(new FiltersView({filmFilters}), siteMain);
 render(new SortView(), siteMain);
-render(new QuantityStatisticsView(), siteFooter);
+render(new QuantityStatisticsView({filmsQuantity}), siteFooter);
 
 filmsPresenter.init();
