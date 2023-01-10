@@ -6,8 +6,9 @@ import FilmListView from '../view/film-list-view.js';
 import EmptyFilmListView from '../view/empty-film-list-view.js';
 import FilmCardView from '../view/film-card-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
-import TopRatedView from '../view/extra-top-rated-view.js';
-import MostCommentedView from '../view/extra-most-commented-view.js';
+// import TopRatedView from '../view/award-top-rated-view.js';
+// import MostCommentedView from '../view/award-most-commented-view.js';
+import AwardedFilmsPresenter from './awarded-films-presenter.js';
 import FilmPopupPresenter from './film-popup-presenter.js';
 
 export default class FilmsPresenter {
@@ -46,9 +47,9 @@ export default class FilmsPresenter {
     this.#renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
 
     render(this.#filmShowMoreBtnComponent, this.#filmListComponent.element);
-    render(new TopRatedView(), this.#filmSectionComponent.element);
-    render(new MostCommentedView(), this.#filmSectionComponent.element);
 
+    const awardedFilmsPrsenter = new AwardedFilmsPresenter(this.#filmSectionComponent.element, this.#films);
+    awardedFilmsPrsenter.init();
   }
 
   #renderFilms(toRenderQuantity) {
