@@ -29,25 +29,14 @@ export default class FilmsPresenter {
 
   init() {
     this.#films = [...this.#filmsModel.films];
-    this.#filmShowMoreBtnComponent = new ShowMoreBtnView({
-      onClick: this.#handleLoadMoreButtonClick
-    });
-    render(this.#filmSectionComponent, this.#filmsContainer);
-    render(this.#filmListComponent, this.#filmSectionComponent.element);
-    render(this.#filmListContainerComponent, this.#filmListComponent.element);
-
+    this.#renderFilmsContainers();
     if (this.#films.length === 0) {
-      const activeFilter = document.querySelector('.main-navigation__item--active').dataset.id;
-      render(new EmptyFilmListView(this.#filmFilters, activeFilter), this.#filmSectionComponent.element);
+      this.#renderEmptyFilmList();
       return;
     }
-
     this.#renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
-
-    render(this.#filmShowMoreBtnComponent, this.#filmListComponent.element);
-
-    const awardedFilmsPrsenter = new AwardedFilmsPresenter(this.#filmSectionComponent.element, this.#films);
-    awardedFilmsPrsenter.init();
+    this.#renderShowMoreBtn();
+    this.#renderAwardSection();
   }
 
   #renderFilms(toRenderQuantity) {
@@ -73,6 +62,29 @@ export default class FilmsPresenter {
     });
 
     render(filmCardComponent, this.#filmListContainerComponent.element);
+  }
+
+  #renderFilmsContainers() {
+    render(this.#filmSectionComponent, this.#filmsContainer);
+    render(this.#filmListComponent, this.#filmSectionComponent.element);
+    render(this.#filmListContainerComponent, this.#filmListComponent.element);
+  }
+
+  #renderEmptyFilmList() {
+    const activeFilter = document.querySelector('.main-navigation__item--active').dataset.id;
+    render(new EmptyFilmListView(this.#filmFilters, activeFilter), this.#filmSectionComponent.element);
+  }
+
+  #renderShowMoreBtn() {
+    this.#filmShowMoreBtnComponent = new ShowMoreBtnView({
+      onClick: this.#handleLoadMoreButtonClick
+    });
+    render(this.#filmShowMoreBtnComponent, this.#filmListComponent.element);
+  }
+
+  #renderAwardSection() {
+    const awardedFilmsPresenter = new AwardedFilmsPresenter(this.#filmSectionComponent.element, this.#films);
+    awardedFilmsPresenter.init();
   }
 
   #handleLoadMoreButtonClick = () => {

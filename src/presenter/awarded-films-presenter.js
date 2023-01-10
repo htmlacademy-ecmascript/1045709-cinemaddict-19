@@ -14,15 +14,23 @@ export default class AwardedFilmsPresenter {
 
   init() {
     if (!this.#isFilmsRatingZero()) {
-      const filmsSortedByRating = [...this.#films].sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
-      const topRatedFilms = this.#isFilmsSameRating() ? this.#getRandomFilmsToAward() : [filmsSortedByRating[0], filmsSortedByRating[1]];
-      render(new AwardTopRatedView({topRatedFilms}), this.#awardedFilmsContainer);
+      this.#renderTopRatedFilms();
     }
     if(!this.#isNoCommentedFilms()) {
-      const filmsSortedByComments = [...this.#films].sort((a, b) => b.comments.length - a.comments.length);
-      const mostCommentedFilms = this.#isFilmsSameCommentsQuantity() ? this.#getRandomFilmsToAward() : [filmsSortedByComments[0], filmsSortedByComments[1]];
-      render(new AwardMostCommentedView({mostCommentedFilms}), this.#awardedFilmsContainer);
+      this.#renderMostCommentedFilms();
     }
+  }
+
+  #renderTopRatedFilms() {
+    const filmsSortedByRating = [...this.#films].sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
+    const topRatedFilms = this.#isFilmsSameRating() ? this.#getRandomFilmsToAward() : [filmsSortedByRating[0], filmsSortedByRating[1]];
+    render(new AwardTopRatedView({topRatedFilms}), this.#awardedFilmsContainer);
+  }
+
+  #renderMostCommentedFilms() {
+    const filmsSortedByComments = [...this.#films].sort((a, b) => b.comments.length - a.comments.length);
+    const mostCommentedFilms = this.#isFilmsSameCommentsQuantity() ? this.#getRandomFilmsToAward() : [filmsSortedByComments[0], filmsSortedByComments[1]];
+    render(new AwardMostCommentedView({mostCommentedFilms}), this.#awardedFilmsContainer);
   }
 
   #getRandomFilmsToAward() {
