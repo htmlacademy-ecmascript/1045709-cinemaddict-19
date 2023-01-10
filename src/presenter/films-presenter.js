@@ -6,8 +6,6 @@ import FilmListView from '../view/film-list-view.js';
 import EmptyFilmListView from '../view/empty-film-list-view.js';
 import FilmCardView from '../view/film-card-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
-// import TopRatedView from '../view/award-top-rated-view.js';
-// import MostCommentedView from '../view/award-most-commented-view.js';
 import AwardedFilmsPresenter from './awarded-films-presenter.js';
 import FilmPopupPresenter from './film-popup-presenter.js';
 
