@@ -6,8 +6,9 @@ import FilmListView from '../view/film-list-view.js';
 import EmptyFilmListView from '../view/empty-film-list-view.js';
 import FilmCardView from '../view/film-card-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
-import TopRatedView from '../view/extra-top-rated-view.js';
-import MostCommentedView from '../view/extra-most-commented-view.js';
+// import TopRatedView from '../view/award-top-rated-view.js';
+// import MostCommentedView from '../view/award-most-commented-view.js';
+import AwardedFilmsPresenter from './awarded-films-presenter.js';
 import FilmPopupPresenter from './film-popup-presenter.js';
 
 export default class FilmsPresenter {
@@ -17,38 +18,41 @@ export default class FilmsPresenter {
   #filmShowMoreBtnComponent = null;
   #filmsContainer = null;
   #filmsModel = null;
+  #filmFilters = null;
 
   #films = [];
   #renderedFilmsCollection = this.#filmListContainerComponent.element.children;
 
-  constructor({filmsContainer, filmsModel}) {
+  constructor({filmsContainer, filmsModel, filmFilters}) {
     this.#filmsContainer = filmsContainer;
     this.#filmsModel = filmsModel;
+    this.#filmFilters = filmFilters;
   }
 
   init() {
     this.#films = [...this.#filmsModel.films];
+    this.#filmShowMoreBtnComponent = new ShowMoreBtnView({
+      onClick: this.#handleLoadMoreButtonClick
+    });
     render(this.#filmSectionComponent, this.#filmsContainer);
     render(this.#filmListComponent, this.#filmSectionComponent.element);
     render(this.#filmListContainerComponent, this.#filmListComponent.element);
 
     if (this.#films.length === 0) {
-      render(new EmptyFilmListView(document.querySelector('.main-navigation__item--active').dataset.id), this.#filmSectionComponent.element);
+      const activeFilter = document.querySelector('.main-navigation__item--active').dataset.id;
+      render(new EmptyFilmListView(this.#filmFilters, activeFilter), this.#filmSectionComponent.element);
       return;
     }
 
     this.#renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
 
     render(this.#filmShowMoreBtnComponent, this.#filmListComponent.element);
-    render(new TopRatedView(), this.#filmSectionComponent.element);
-    render(new MostCommentedView(), this.#filmSectionComponent.element);
 
+    const awardedFilmsPrsenter = new AwardedFilmsPresenter(this.#filmSectionComponent.element, this.#films);
+    awardedFilmsPrsenter.init();
   }
 
   #renderFilms(toRenderQuantity) {
-    this.#filmShowMoreBtnComponent = new ShowMoreBtnView({
-      onClick: this.#handleLoadMoreButtonClick
-    });
     const renderedFilmsQuantity = this.#renderedFilmsCollection.length;
     for (let i = renderedFilmsQuantity; i < renderedFilmsQuantity + toRenderQuantity; i++) {
       this.#renderFilm(this.#films[i]);
