@@ -7,6 +7,7 @@ import EmptyFilmListView from '../view/empty-film-list-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
 import FilmPresenter from './film-presenter.js';
 import AwardedFilmsPresenter from './awarded-films-presenter.js';
+import { updateItem } from '../utils.js';
 
 export default class FilmsPresenter {
   #filmSectionComponent = new FilmSectionView();
@@ -87,6 +88,11 @@ export default class FilmsPresenter {
     const awardedFilmsPresenter = new AwardedFilmsPresenter(this.#filmSectionComponent.element, this.#films);
     awardedFilmsPresenter.init();
   }
+
+  #handleFilmChange = (updatedFilm) => {
+    this.#films = updateItem(this.#films, updatedFilm);
+    this.#filmPresenter.get(updatedFilm.id).init(updatedFilm);
+  };
 
   #handleLoadMoreButtonClick = () => {
     this.#renderFilms(FILMS_TO_RENDER_QUANTITY);
