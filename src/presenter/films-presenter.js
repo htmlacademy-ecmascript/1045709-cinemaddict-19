@@ -1,4 +1,4 @@
-import { render } from '../framework/render.js';
+import { remove, render } from '../framework/render.js';
 import { DEFAULT_RENDERED_FILMS_QUANTITY, FILMS_TO_RENDER_QUANTITY } from '../consts.js';
 import FilmSectionView from '../view/film-section-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
@@ -19,6 +19,7 @@ export default class FilmsPresenter {
 
   #films = [];
   #renderedFilmsCollection = this.#filmListContainerComponent.element.children;
+  #filmPresenter = new Map();
 
   constructor({filmsContainer, filmsModel, filmFilters}) {
     this.#filmsContainer = filmsContainer;
@@ -55,6 +56,13 @@ export default class FilmsPresenter {
       filmListContainer: this.#filmListContainerComponent.element
     });
     filmPresenter.init(film, this.#filmsModel);
+    this.#filmPresenter.set(film.id, filmPresenter);
+  }
+
+  #clearFilmList() {
+    this.#filmPresenter.forEach((presenter) => presenter.destroy());
+    this.#filmPresenter.clear();
+    remove(this.#filmShowMoreBtnComponent);
   }
 
   #renderFilmsContainers() {
