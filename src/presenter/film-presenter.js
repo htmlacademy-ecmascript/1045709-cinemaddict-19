@@ -5,6 +5,7 @@ import FilmPopupPresenter from './film-popup-presenter.js';
 
 export default class FilmPresenter {
   #filmListContainer = null;
+  #handleUpdateFilmData = null;
 
   #filmComponent = null;
 
@@ -12,8 +13,9 @@ export default class FilmPresenter {
   #comments = null;
   #popupPresenter = null;
 
-  constructor({filmListContainer}) {
+  constructor({filmListContainer, onDataChange}) {
     this.#filmListContainer = filmListContainer;
+    this.#handleUpdateFilmData = onDataChange;
   }
 
   init(film, filmsModel) {
@@ -28,7 +30,10 @@ export default class FilmPresenter {
 
     this.#filmComponent = new FilmCardView({
       film: this.#film,
-      onClick: this.#handleClick
+      onClick: this.#handleClick,
+      onWatchlistClick: this.#handleWatchlistClick,
+      onWatchedClick: this.#handleWatchedClick,
+      onFavoriteClick: this.#handleFavoriteClick
     });
 
     if (prevFilmComponent === null) {
@@ -49,6 +54,24 @@ export default class FilmPresenter {
 
   #handleClick = () => {
     this.#popupPresenter.showPopup();
+  };
+
+  #handleWatchlistClick = () => {
+    const updatedFilm = {...this.#film};
+    updatedFilm.userDetails.watchlist = !this.#film.userDetails.watchlist;
+    this.#handleUpdateFilmData(updatedFilm);
+  };
+
+  #handleWatchedClick = () => {
+    const updatedFilm = {...this.#film};
+    updatedFilm.userDetails.alreadyWatched = !this.#film.userDetails.alreadyWatched;
+    this.#handleUpdateFilmData(updatedFilm);
+  };
+
+  #handleFavoriteClick = () => {
+    const updatedFilm = {...this.#film};
+    updatedFilm.userDetails.favorite = !this.#film.userDetails.favorite;
+    this.#handleUpdateFilmData(updatedFilm);
   };
 
 }

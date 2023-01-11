@@ -54,7 +54,8 @@ export default class FilmsPresenter {
 
   #renderFilm(film) {
     const filmPresenter = new FilmPresenter({
-      filmListContainer: this.#filmListContainerComponent.element
+      filmListContainer: this.#filmListContainerComponent.element,
+      onDataChange: this.#handleUpdateFilmData
     });
     filmPresenter.init(film, this.#filmsModel);
     this.#filmPresenter.set(film.id, filmPresenter);
@@ -89,9 +90,9 @@ export default class FilmsPresenter {
     awardedFilmsPresenter.init();
   }
 
-  #handleFilmChange = (updatedFilm) => {
+  #handleUpdateFilmData = (updatedFilm) => {
     this.#films = updateItem(this.#films, updatedFilm);
-    this.#filmPresenter.get(updatedFilm.id).init(updatedFilm);
+    this.#filmPresenter.get(updatedFilm.id).init(updatedFilm, this.#filmsModel);
   };
 
   #handleLoadMoreButtonClick = () => {
