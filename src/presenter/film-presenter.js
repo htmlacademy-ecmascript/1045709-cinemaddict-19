@@ -1,4 +1,4 @@
-import { render } from '../framework/render.js';
+import { render, replace, remove } from '../framework/render.js';
 import FilmCardView from '../view/film-card-view.js';
 import FilmPopupPresenter from './film-popup-presenter.js';
 
@@ -24,12 +24,27 @@ export default class FilmPresenter {
       filmComments: this.#comments
     });
 
+    const prevFilmComponent = this.#filmComponent;
+
     this.#filmComponent = new FilmCardView({
       film: this.#film,
       onClick: this.#handleClick
     });
 
-    render(this.#filmComponent, this.#filmListContainer);
+    if (prevFilmComponent === null) {
+      render(this.#filmComponent, this.#filmListContainer);
+      return;
+    }
+
+    if (this.#filmListContainer.contains(prevFilmComponent.element)) {
+      replace(this.#filmComponent, prevFilmComponent);
+    }
+
+    remove(prevFilmComponent);
+  }
+
+  destroy() {
+    remove(this.#filmComponent);
   }
 
   #handleClick = () => {
