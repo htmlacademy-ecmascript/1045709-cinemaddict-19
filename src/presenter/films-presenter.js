@@ -4,15 +4,14 @@ import FilmSectionView from '../view/film-section-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
 import EmptyFilmListView from '../view/empty-film-list-view.js';
-import FilmCardView from '../view/film-card-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
+import FilmPresenter from './film-presenter.js';
 import AwardedFilmsPresenter from './awarded-films-presenter.js';
-import FilmPopupPresenter from './film-popup-presenter.js';
 
 export default class FilmsPresenter {
   #filmSectionComponent = new FilmSectionView();
-  #filmListContainerComponent = new FilmListContainerView();
   #filmListComponent = new FilmListView();
+  #filmListContainerComponent = new FilmListContainerView();
   #filmShowMoreBtnComponent = null;
   #filmsContainer = null;
   #filmsModel = null;
@@ -52,16 +51,10 @@ export default class FilmsPresenter {
   }
 
   #renderFilm(film) {
-    const filmComments = this.#filmsModel.comments.filter((comment) => film.comments.includes(comment.id));
-    const filmPopupPresenter = new FilmPopupPresenter({film, filmComments});
-    const filmCardComponent = new FilmCardView({
-      film,
-      onClick: () => {
-        filmPopupPresenter.showPopup();
-      }
+    const filmPresenter = new FilmPresenter({
+      filmListContainer: this.#filmListContainerComponent.element
     });
-
-    render(filmCardComponent, this.#filmListContainerComponent.element);
+    filmPresenter.init(film, this.#filmsModel);
   }
 
   #renderFilmsContainers() {
