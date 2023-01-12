@@ -23,11 +23,13 @@ export default class FilmPresenter {
     this.#comments = filmsModel.comments.filter((comment) => film.comments.includes(comment.id));
     this.#popupPresenter = new FilmPopupPresenter({
       film: this.#film,
-      filmComments: this.#comments
+      filmComments: this.#comments,
+      onWatchlistClick: this.#handleWatchlistClick,
+      onWatchedClick: this.#handleWatchedClick,
+      onFavoriteClick: this.#handleFavoriteClick
     });
 
     const prevFilmComponent = this.#filmComponent;
-
     this.#filmComponent = new FilmCardView({
       film: this.#film,
       onClick: this.#handleClick,
