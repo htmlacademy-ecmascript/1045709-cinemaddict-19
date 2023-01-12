@@ -6,13 +6,14 @@ let openedPopup = null;
 export default class FilmPopupPresenter {
   #filmPopupComponent = null;
 
-  constructor({ film, filmComments }) {
+  constructor({ film, filmComments, onWatchlistClick, onWatchedClick, onFavoriteClick }) {
     this.#filmPopupComponent = new FilmPopupView({
       film,
       filmComments,
-      onCloseClick: () => {
-        this.closePopup();
-      }
+      onCloseClick: this.#handleCloseClick,
+      onWatchlistClick,
+      onWatchedClick,
+      onFavoriteClick
     });
   }
 
@@ -32,6 +33,10 @@ export default class FilmPopupPresenter {
     document.removeEventListener('keydown', this.#closePopupKeydownHandler);
     openedPopup = null;
   }
+
+  #handleCloseClick = () => {
+    this.closePopup();
+  };
 
   #closePopupKeydownHandler = (evt) => {
     if (isEscPressed(evt)) {

@@ -1,20 +1,18 @@
-import { render } from '../framework/render.js';
+import { remove, render } from '../framework/render.js';
 import { DEFAULT_RENDERED_FILMS_QUANTITY, FILMS_TO_RENDER_QUANTITY } from '../consts.js';
 import FilmSectionView from '../view/film-section-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
 import EmptyFilmListView from '../view/empty-film-list-view.js';
-import FilmCardView from '../view/film-card-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
-// import TopRatedView from '../view/award-top-rated-view.js';
-// import MostCommentedView from '../view/award-most-commented-view.js';
+import FilmPresenter from './film-presenter.js';
 import AwardedFilmsPresenter from './awarded-films-presenter.js';
-import FilmPopupPresenter from './film-popup-presenter.js';
+import { updateItem } from '../utils.js';
 
 export default class FilmsPresenter {
   #filmSectionComponent = new FilmSectionView();
-  #filmListContainerComponent = new FilmListContainerView();
   #filmListComponent = new FilmListView();
+  #filmListContainerComponent = new FilmListContainerView();
   #filmShowMoreBtnComponent = null;
   #filmsContainer = null;
   #filmsModel = null;
@@ -22,6 +20,7 @@ export default class FilmsPresenter {
 
   #films = [];
   #renderedFilmsCollection = this.#filmListContainerComponent.element.children;
+  #filmPresenter = new Map();
 
   constructor({filmsContainer, filmsModel, filmFilters}) {
     this.#filmsContainer = filmsContainer;
@@ -31,25 +30,14 @@ export default class FilmsPresenter {
 
   init() {
     this.#films = [...this.#filmsModel.films];
-    this.#filmShowMoreBtnComponent = new ShowMoreBtnView({
-      onClick: this.#handleLoadMoreButtonClick
-    });
-    render(this.#filmSectionComponent, this.#filmsContainer);
-    render(this.#filmListComponent, this.#filmSectionComponent.element);
-    render(this.#filmListContainerComponent, this.#filmListComponent.element);
-
+    this.#renderFilmsContainers();
     if (this.#films.length === 0) {
-      const activeFilter = document.querySelector('.main-navigation__item--active').dataset.id;
-      render(new EmptyFilmListView(this.#filmFilters, activeFilter), this.#filmSectionComponent.element);
+      this.#renderEmptyFilmList();
       return;
     }
-
     this.#renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
-
-    render(this.#filmShowMoreBtnComponent, this.#filmListComponent.element);
-
-    const awardedFilmsPrsenter = new AwardedFilmsPresenter(this.#filmSectionComponent.element, this.#films);
-    awardedFilmsPrsenter.init();
+    this.#renderShowMoreBtn();
+    this.#renderAwardSection();
   }
 
   #renderFilms(toRenderQuantity) {
@@ -65,17 +53,50 @@ export default class FilmsPresenter {
   }
 
   #renderFilm(film) {
-    const filmComments = this.#filmsModel.comments.filter((comment) => film.comments.includes(comment.id));
-    const filmPopupPresenter = new FilmPopupPresenter({film, filmComments});
-    const filmCardComponent = new FilmCardView({
-      film,
-      onClick: () => {
-        filmPopupPresenter.showPopup();
-      }
+    const filmPresenter = new FilmPresenter({
+      filmListContainer: this.#filmListContainerComponent.element,
+      onDataChange: this.#handleUpdateFilmData
     });
-
-    render(filmCardComponent, this.#filmListContainerComponent.element);
+    filmPresenter.init(film, this.#filmsModel);
+    this.#filmPresenter.set(film.id, filmPresenter);
   }
+
+  #clearFilmList() {
+    this.#filmPresenter.forEach((presenter) => presenter.destroy());
+    this.#filmPresenter.clear();
+    remove(this.#filmShowMoreBtnComponent);
+  }
+
+  #renderFilmsContainers() {
+    render(this.#filmSectionComponent, this.#filmsContainer);
+    render(this.#filmListComponent, this.#filmSectionComponent.element);
+    render(this.#filmListContainerComponent, this.#filmListComponent.element);
+  }
+
+  #renderEmptyFilmList() {
+    const activeFilter = document.querySelector('.main-navigation__item--active').dataset.id;
+    render(new EmptyFilmListView(this.#filmFilters, activeFilter), this.#filmSectionComponent.element);
+  }
+
+  #renderShowMoreBtn() {
+    this.#filmShowMoreBtnComponent = new ShowMoreBtnView({
+      onClick: this.#handleLoadMoreButtonClick
+    });
+    render(this.#filmShowMoreBtnComponent, this.#filmListComponent.element);
+  }
+
+  #renderAwardSection() {
+    const awardedFilmsPresenter = new AwardedFilmsPresenter({
+      awardedFilmsContainer: this.#filmSectionComponent.element,
+      films: this.#films
+    });
+    awardedFilmsPresenter.init();
+  }
+
+  #handleUpdateFilmData = (updatedFilm) => {
+    this.#films = updateItem(this.#films, updatedFilm);
+    this.#filmPresenter.get(updatedFilm.id).init(updatedFilm, this.#filmsModel);
+  };
 
   #handleLoadMoreButtonClick = () => {
     this.#renderFilms(FILMS_TO_RENDER_QUANTITY);

@@ -141,15 +141,32 @@ const createFilmPopupTemplate = (film, comments) =>{
 export default class FilmPopupView extends AbstractView {
   #film = null;
   #filmComments = null;
-  #handleCloseClick = null;
 
-  constructor({film, filmComments, onCloseClick}) {
+  #handleCloseClick = null;
+  #handleWatchlistClick = null;
+  #handleWatchedClick = null;
+  #handleFavoriteClick = null;
+
+  constructor({film, filmComments, onCloseClick, onWatchlistClick, onWatchedClick, onFavoriteClick}) {
     super();
     this.#film = film;
     this.#filmComments = filmComments;
+
     this.#handleCloseClick = onCloseClick;
+    this.#handleWatchlistClick = onWatchlistClick;
+    this.#handleWatchedClick = onWatchedClick;
+    this.#handleFavoriteClick = onFavoriteClick;
 
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeClickHanlder);
+    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#watchlistClickHandler);
+    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#watchedClickHandler);
+    this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#favoriteClickHandler);
+
+    this.element.querySelector('.film-details__controls').addEventListener('click', (evt) => {
+      if (evt.target.classList.contains('film-details__control-button')) {
+        evt.target.classList.toggle('film-details__control-button--active');
+      }
+    });
   }
 
   get template() {
@@ -158,6 +175,18 @@ export default class FilmPopupView extends AbstractView {
 
   #closeClickHanlder = () => {
     this.#handleCloseClick();
+  };
+
+  #watchlistClickHandler = () => {
+    this.#handleWatchlistClick();
+  };
+
+  #watchedClickHandler = () => {
+    this.#handleWatchedClick();
+  };
+
+  #favoriteClickHandler = () => {
+    this.#handleFavoriteClick();
   };
 
 }

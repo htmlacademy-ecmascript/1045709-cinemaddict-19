@@ -126,7 +126,7 @@ const mockFilms = [
     id: 3,
     comments: [3, 5],
     filmInfo: {
-      title: 'A The Carpet',
+      title: 'Carpet Second',
       alternativeTitle: 'Laziness Who Sold Themselves',
       totalRating: 7.4,
       poster: `images/posters/${getRandomArrayElement(POSTERS)}`,
@@ -211,8 +211,36 @@ const mockFilms = [
       favorite: true
     }
   },
+  {
+    id: 6,
+    src: `./images/posters/${getRandomArrayElement(POSTERS)}`,
+    comments: [1, 4, 8],
+    filmInfo: {
+      title: 'Test',
+      alternativeTitle: 'test film',
+      totalRating: 6.1,
+      poster: `images/posters/${getRandomArrayElement(POSTERS)}`,
+      ageRating: 9,
+      director: 'Nob',
+      writers: [
+        'Takeshi'
+      ],
+      actors: [
+        'Morgan'
+      ],
+      release: {
+        date: '1976-05-11T00:00:00.000Z',
+      },
+      duration: '2h 26m',
+      genre: getRandomArrayElement(GENRES),
+      description: 'Description'
+    },
+    userDetails: {
+      watchlist: false,
+      alreadyWatched: true,
+      favorite: true
+    }
+  },
 ];
 
-const getRandomFilm = () => getRandomArrayElement(mockFilms);
-
-export { mockComments, getRandomFilm };
+export { mockComments, mockFilms };
