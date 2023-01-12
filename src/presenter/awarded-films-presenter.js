@@ -7,7 +7,7 @@ export default class AwardedFilmsPresenter {
   #awardedFilmsContainer = null;
   #films = null;
 
-  constructor(awardedFilmsContainer, films) {
+  constructor({awardedFilmsContainer, films}) {
     this.#awardedFilmsContainer = awardedFilmsContainer;
     this.#films = films;
   }

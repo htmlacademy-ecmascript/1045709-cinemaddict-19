@@ -86,7 +86,10 @@ export default class FilmsPresenter {
   }
 
   #renderAwardSection() {
-    const awardedFilmsPresenter = new AwardedFilmsPresenter(this.#filmSectionComponent.element, this.#films);
+    const awardedFilmsPresenter = new AwardedFilmsPresenter({
+      awardedFilmsContainer: this.#filmSectionComponent.element,
+      films: this.#films
+    });
     awardedFilmsPresenter.init();
   }
 
