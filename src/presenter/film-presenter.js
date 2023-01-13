@@ -24,18 +24,14 @@ export default class FilmPresenter {
     this.#popupPresenter = new FilmPopupPresenter({
       film: this.#film,
       filmComments: this.#comments,
-      onWatchlistClick: this.#handleWatchlistClick,
-      onWatchedClick: this.#handleWatchedClick,
-      onFavoriteClick: this.#handleFavoriteClick
+      onControlBtnClick: this.#handleControlButton,
     });
 
     const prevFilmComponent = this.#filmComponent;
     this.#filmComponent = new FilmCardView({
       film: this.#film,
       onClick: this.#handleClick,
-      onWatchlistClick: this.#handleWatchlistClick,
-      onWatchedClick: this.#handleWatchedClick,
-      onFavoriteClick: this.#handleFavoriteClick
+      onControlBtnClick: this.#handleControlButton,
     });
 
     if (prevFilmComponent === null) {
@@ -54,26 +50,22 @@ export default class FilmPresenter {
     remove(this.#filmComponent);
   }
 
+  #getUpdatedFilmByUserDetail(userDetail) {
+    return {
+      ...this.#film,
+      userDetails: {
+        ...this.#film.userDetails,
+        [userDetail]: !this.#film.userDetails[userDetail],
+      }
+    };
+  }
+
   #handleClick = () => {
     this.#popupPresenter.showPopup();
   };
 
-  #handleWatchlistClick = () => {
-    const updatedFilm = {...this.#film};
-    updatedFilm.userDetails.watchlist = !this.#film.userDetails.watchlist;
-    this.#handleUpdateFilmData(updatedFilm);
-  };
-
-  #handleWatchedClick = () => {
-    const updatedFilm = {...this.#film};
-    updatedFilm.userDetails.alreadyWatched = !this.#film.userDetails.alreadyWatched;
-    this.#handleUpdateFilmData(updatedFilm);
-  };
-
-  #handleFavoriteClick = () => {
-    const updatedFilm = {...this.#film};
-    updatedFilm.userDetails.favorite = !this.#film.userDetails.favorite;
-    this.#handleUpdateFilmData(updatedFilm);
+  #handleControlButton = (userDetail) => {
+    this.#handleUpdateFilmData(this.#getUpdatedFilmByUserDetail(userDetail));
   };
 
 }
