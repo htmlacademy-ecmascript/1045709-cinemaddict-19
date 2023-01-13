@@ -1,6 +1,5 @@
 import UserRankView from './view/user-rank-view.js';
 import FiltersView from './view/filters-view.js';
-import SortView from './view/sort-view.js';
 import QuantityStatisticsView from './view/quantity-statistics-view.js';
 import { render } from './framework/render.js';
 import { mockComments, mockFilms } from './mock/film.js';
@@ -27,7 +26,6 @@ const filmsPresenter = new FilmsPresenter({
 
 render(new UserRankView(), siteHeader);
 render(new FiltersView({filmFilters}), siteMain);
-render(new SortView(), siteMain);
 render(new QuantityStatisticsView({filmsQuantity}), siteFooter);
 
 filmsPresenter.init();

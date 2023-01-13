@@ -1,5 +1,6 @@
 import { remove, render } from '../framework/render.js';
 import { DEFAULT_RENDERED_FILMS_QUANTITY, FILMS_TO_RENDER_QUANTITY } from '../consts.js';
+import SortView from '../view/sort-view.js';
 import FilmSectionView from '../view/film-section-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
@@ -29,6 +30,7 @@ export default class FilmsPresenter {
 
   init() {
     this.#films = [...this.#filmsModel.films];
+    this.#renderSort();
     this.#renderFilmsContainers();
     if (this.#films.length === 0) {
       this.#renderEmptyFilmList();
@@ -37,6 +39,10 @@ export default class FilmsPresenter {
     this.#renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
     this.#renderShowMoreBtn();
     this.#renderAwardSection();
+  }
+
+  #renderSort() {
+    render(new SortView(), this.#filmsContainer);
   }
 
   #renderFilms(toRenderQuantity) {
