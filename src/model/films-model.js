@@ -1,8 +1,11 @@
-import { mockComments, mockFilms } from '../mock/film.js';
-
 export default class FilmsModel {
-  #films = Array.from(mockFilms);
-  #comments = mockComments;
+  #films = null;
+  #comments = null;
+
+  constructor({films, comments}) {
+    this.#films = films;
+    this.#comments = comments;
+  }
 
   get films() {
     return this.#films;
