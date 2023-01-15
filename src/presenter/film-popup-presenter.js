@@ -6,14 +6,12 @@ let openedPopup = null;
 export default class FilmPopupPresenter {
   #filmPopupComponent = null;
 
-  constructor({ film, filmComments, onWatchlistClick, onWatchedClick, onFavoriteClick }) {
+  constructor({ film, filmComments, onControlBtnClick }) {
     this.#filmPopupComponent = new FilmPopupView({
       film,
       filmComments,
       onCloseClick: this.#handleCloseClick,
-      onWatchlistClick,
-      onWatchedClick,
-      onFavoriteClick
+      onControlBtnClick
     });
   }
 
