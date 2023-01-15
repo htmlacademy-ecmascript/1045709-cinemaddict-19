@@ -134,8 +134,8 @@ export default class FilmsPresenter {
     this.#filmPresenter.get(updatedFilm.id).init(updatedFilm, this.#filmsModel);
   };
 
-  #handleSortTypeChange = (sortName) => {
-    this.#sortFilmList(sortName);
+  #handleSortTypeChange = (sortType) => {
+    this.#sortFilmList(sortType);
   };
 
   #handleLoadMoreButtonClick = () => {

@@ -172,7 +172,7 @@ export default class FilmPopupView extends AbstractView {
   };
 
   #controlButtonsClickHandler = (evt) => {
-    if (evt.target.classList.contains('film-details__control-button')) {
+    if (evt.target.tagName === 'BUTTON') {
       this.#handleControlButtonClick(evt.target.dataset.userDetail);
     }
   };

@@ -214,7 +214,7 @@ const mockFilms = [
   {
     id: 6,
     src: `./images/posters/${getRandomArrayElement(POSTERS)}`,
-    comments: [1, 4, 8],
+    comments: [1, 4, 2],
     filmInfo: {
       title: 'Test',
       alternativeTitle: 'test film',
