@@ -50,22 +50,12 @@ export default class FilmPresenter {
     remove(this.#filmComponent);
   }
 
-  #getUpdatedFilmByUserDetail(userDetail) {
-    return {
-      ...this.#film,
-      userDetails: {
-        ...this.#film.userDetails,
-        [userDetail]: !this.#film.userDetails[userDetail],
-      }
-    };
-  }
-
   #handleClick = () => {
     this.#popupPresenter.showPopup();
   };
 
-  #handleControlButton = (userDetail) => {
-    this.#handleUpdateFilmData(this.#getUpdatedFilmByUserDetail(userDetail));
+  #handleControlButton = (updatedFilm) => {
+    this.#handleUpdateFilmData(updatedFilm);
   };
 
 }

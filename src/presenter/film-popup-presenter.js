@@ -26,6 +26,9 @@ export default class FilmPopupPresenter {
   }
 
   closePopup() {
+    this.#filmPopupComponent.updateElement({
+      commentEmoji: this.#filmPopupComponent.defaultCommentEmoji
+    });
     document.body.classList.remove('hide-overflow');
     document.body.removeChild(this.#filmPopupComponent.element);
     document.removeEventListener('keydown', this.#closePopupKeydownHandler);
