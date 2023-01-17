@@ -5,6 +5,7 @@ import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
 import EmptyFilmListView from '../view/empty-film-list-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
+import FilmsFiltersPresenter from './films-filters-presenter.js';
 import FilmsSortPresenter from './films-sort-presenter.js';
 import FilmPresenter from './film-presenter.js';
 import AwardedFilmsPresenter from './awarded-films-presenter.js';
@@ -16,21 +17,21 @@ export default class FilmsPresenter {
   #filmShowMoreBtnComponent = null;
   #filmsContainer = null;
   #filmsModel = null;
-  #filmFilters = null;
 
   #films = [];
   #renderedFilmsCollection = this.#filmListContainerComponent.element.children;
   #filmPresenter = new Map();
+  #filtersPresenter = null;
   #sortPresenter = null;
 
-  constructor({filmsContainer, filmsModel, filmFilters}) {
+  constructor({filmsContainer, filmsModel}) {
     this.#filmsContainer = filmsContainer;
     this.#filmsModel = filmsModel;
-    this.#filmFilters = filmFilters;
   }
 
   init() {
     this.#films = [...this.#filmsModel.films];
+    this.#renderFilters();
     if (this.#films.length === 0) {
       this.#renderFilmsContainers();
       this.#renderEmptyFilmList();
@@ -72,6 +73,13 @@ export default class FilmsPresenter {
     this.#filmPresenter.set(film.id, filmPresenter);
   }
 
+  #renderFilters() {
+    this.#filtersPresenter = new FilmsFiltersPresenter({
+      filtersContainer: this.#filmsContainer,
+      films: this.#films
+    });
+  }
+
   #renderSort() {
     this.#sortPresenter = new FilmsSortPresenter({
       sortContainer: this.#filmsContainer,
@@ -87,8 +95,7 @@ export default class FilmsPresenter {
   }
 
   #renderEmptyFilmList() {
-    const activeFilter = document.querySelector('.main-navigation__item--active').dataset.id;
-    render(new EmptyFilmListView(this.#filmFilters, activeFilter), this.#filmSectionComponent.element);
+    render(new EmptyFilmListView(this.#filtersPresenter.filters, this.#filtersPresenter.activeFilter), this.#filmSectionComponent.element);
   }
 
   #renderShowMoreBtn() {
