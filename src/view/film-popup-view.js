@@ -159,9 +159,9 @@ export default class FilmPopupView extends AbstractStatefulView {
   #handleCloseClick = null;
   #handleControlButtonClick = null;
 
-  constructor({film, filmComments, onCloseClick, onControlBtnClick}) {
+  constructor({film, onCloseClick, onControlBtnClick}) {
     super();
-    this._setState(FilmPopupView.parseFilmToState(film, filmComments));
+    this._setState(FilmPopupView.parseFilmToState(film));
 
     this.#handleCloseClick = onCloseClick;
     this.#handleControlButtonClick = onControlBtnClick;
@@ -172,6 +172,12 @@ export default class FilmPopupView extends AbstractStatefulView {
 
   get template() {
     return createFilmPopupTemplate(this._state);
+  }
+
+  reset(film) {
+    this.updateElement(
+      FilmPopupView.parseFilmToState(film)
+    );
   }
 
   _restoreHandlers() {
@@ -206,10 +212,9 @@ export default class FilmPopupView extends AbstractStatefulView {
     this.element.scrollTo(0, this._state.scrollPosition);
   };
 
-  static parseFilmToState(film, filmComments) {
+  static parseFilmToState(film) {
     return {
       ...film,
-      filmComments,
       commentEmoji: DEFAULT_COMMENT_EMOJI
     };
   }

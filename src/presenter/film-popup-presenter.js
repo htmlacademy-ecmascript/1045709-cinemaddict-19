@@ -5,11 +5,15 @@ let openedPopup = null;
 
 export default class FilmPopupPresenter {
   #filmPopupComponent = null;
+  #film = null;
 
   constructor({ film, filmComments, onControlBtnClick }) {
+    this.#film = {
+      ...film,
+      filmComments
+    };
     this.#filmPopupComponent = new FilmPopupView({
-      film,
-      filmComments,
+      film: this.#film,
       onCloseClick: this.#handleCloseClick,
       onControlBtnClick
     });
@@ -26,9 +30,7 @@ export default class FilmPopupPresenter {
   }
 
   closePopup() {
-    this.#filmPopupComponent.updateElement({
-      commentEmoji: this.#filmPopupComponent.defaultCommentEmoji
-    });
+    this.#filmPopupComponent.reset(this.#film);
     document.body.classList.remove('hide-overflow');
     document.body.removeChild(this.#filmPopupComponent.element);
     document.removeEventListener('keydown', this.#closePopupKeydownHandler);
