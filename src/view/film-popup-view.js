@@ -125,7 +125,7 @@ const createAddCommentFormTemplate = (commentEmoji) => (`
 const createFilmPopupTemplate = (film) => {
   const infoTemplate = createInfoTemplate(film.filmInfo);
   const controlButtonsTemplate = createControlButtonsTemplate(film.userDetails);
-  const commentsTemplate = createCommentsTemplate(film.filmComments);
+  const commentsTemplate = createCommentsTemplate(film.comments);
   const formTemplate = createAddCommentFormTemplate(film.commentEmoji);
 
   return (

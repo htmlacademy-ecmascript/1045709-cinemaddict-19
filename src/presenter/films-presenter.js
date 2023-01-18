@@ -69,7 +69,10 @@ export default class FilmsPresenter {
       filmListContainer: this.#filmListContainerComponent.element,
       onDataChange: this.#handleUpdateFilmData
     });
-    filmPresenter.init(film, this.#filmsModel);
+    filmPresenter.init({
+      ...film,
+      comments: this.#filmsModel.comments.filter((comment) => film.comments.includes(comment.id))
+    });
     this.#filmPresenter.set(film.id, filmPresenter);
   }
 
@@ -120,7 +123,7 @@ export default class FilmsPresenter {
 
   #handleUpdateFilmData = (updatedFilm) => {
     this.#updateFilms(updatedFilm);
-    this.#filmPresenter.get(updatedFilm.id).init(updatedFilm, this.#filmsModel);
+    this.#filmPresenter.get(updatedFilm.id).init(updatedFilm);
   };
 
   #handleLoadMoreButtonClick = () => {
