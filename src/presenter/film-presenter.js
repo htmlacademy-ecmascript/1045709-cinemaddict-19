@@ -9,8 +9,6 @@ export default class FilmPresenter {
 
   #filmComponent = null;
 
-  #film = null;
-  #comments = null;
   #popupPresenter = null;
 
   constructor({filmListContainer, onDataChange}) {
@@ -18,18 +16,15 @@ export default class FilmPresenter {
     this.#handleUpdateFilmData = onDataChange;
   }
 
-  init(film, filmsModel) {
-    this.#film = film;
-    this.#comments = filmsModel.comments.filter((comment) => film.comments.includes(comment.id));
+  init(film) {
     this.#popupPresenter = new FilmPopupPresenter({
-      film: this.#film,
-      filmComments: this.#comments,
+      film,
       onControlBtnClick: this.#handleControlButton,
     });
 
     const prevFilmComponent = this.#filmComponent;
     this.#filmComponent = new FilmCardView({
-      film: this.#film,
+      film,
       onClick: this.#handleClick,
       onControlBtnClick: this.#handleControlButton,
     });
@@ -50,22 +45,12 @@ export default class FilmPresenter {
     remove(this.#filmComponent);
   }
 
-  #getUpdatedFilmByUserDetail(userDetail) {
-    return {
-      ...this.#film,
-      userDetails: {
-        ...this.#film.userDetails,
-        [userDetail]: !this.#film.userDetails[userDetail],
-      }
-    };
-  }
-
   #handleClick = () => {
     this.#popupPresenter.showPopup();
   };
 
-  #handleControlButton = (userDetail) => {
-    this.#handleUpdateFilmData(this.#getUpdatedFilmByUserDetail(userDetail));
+  #handleControlButton = (updatedFilm) => {
+    this.#handleUpdateFilmData(updatedFilm);
   };
 
 }

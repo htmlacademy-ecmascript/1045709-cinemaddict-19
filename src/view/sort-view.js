@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { SortType, setActiveSortButton } from '../sort.js';
+import { SortType } from '../consts.js';
 
 const createSortTemplate = () => (
   `<ul class="sort">
@@ -25,9 +25,10 @@ export default class SortView extends AbstractView {
 
   #sortTypeChangeHandler = (evt) => {
     evt.preventDefault();
-    if (evt.target.tagName === 'A' && !evt.target.classList.contains('sort__button--active')) {
+    if (evt.target.classList.contains('sort__button') && !evt.target.classList.contains('sort__button--active')) {
       this.#handleSortTypeChange(evt.target.dataset.sortType);
-      setActiveSortButton(evt.target);
+      this.element.querySelector('.sort__button--active').classList.remove('sort__button--active');
+      evt.target.classList.toggle('sort__button--active');
     }
   };
 
