@@ -59,7 +59,7 @@ export default class FilmCardView extends AbstractView {
   };
 
   #controlButtonsClickHandler = (evt) => {
-    if (evt.target.tagName === 'BUTTON') {
+    if (evt.target.classList.contains('film-card__controls-item')) {
       this.#handleControlButtonClick({
         ...this.#film,
         userDetails: {

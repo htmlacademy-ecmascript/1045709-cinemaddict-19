@@ -98,7 +98,10 @@ export default class FilmsPresenter {
   }
 
   #renderEmptyFilmList() {
-    render(new EmptyFilmListView(this.#filtersPresenter.filters, this.#filtersPresenter.activeFilter), this.#filmSectionComponent.element);
+    render(new EmptyFilmListView({
+      filters: this.#filtersPresenter.filters,
+      activeFilter: this.#filtersPresenter.activeFilter
+    }), this.#filmSectionComponent.element);
   }
 
   #renderShowMoreBtn() {

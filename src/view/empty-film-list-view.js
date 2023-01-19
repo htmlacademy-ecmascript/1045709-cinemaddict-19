@@ -1,19 +1,19 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
-const createEmptyFilmListTemplate = (filmFilters, activeFilter) => `<h2 class="films-list__title">${filmFilters[activeFilter].emptyFilmsMessage}</h2>`;
+const createEmptyFilmListTemplate = (filters, activeFilter) => `<h2 class="films-list__title">${filters[activeFilter].emptyFilmsMessage}</h2>`;
 
 export default class EmptyFilmListView extends AbstractView {
-  #filmFilters = null;
+  #filters = null;
   #activeFilter = null;
 
-  constructor(filmFilters, activeFilter) {
+  constructor({filters, activeFilter}) {
     super();
-    this.#filmFilters = filmFilters;
+    this.#filters = filters;
     this.#activeFilter = activeFilter;
   }
 
   get template() {
-    return createEmptyFilmListTemplate(this.#filmFilters, this.#activeFilter);
+    return createEmptyFilmListTemplate(this.#filters, this.#activeFilter);
   }
 
 }

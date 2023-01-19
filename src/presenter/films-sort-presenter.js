@@ -1,5 +1,5 @@
 import { render } from '../framework/render.js';
-import { SortType, FILMS_TO_RENDER_QUANTITY, FILM_CARD_DATE_FORMAT } from '../consts.js';
+import { SortType, DEFAULT_RENDERED_FILMS_QUANTITY, FILM_CARD_DATE_FORMAT } from '../consts.js';
 import { humanizeDate } from '../utils.js';
 import SortView from '../view/sort-view.js';
 
@@ -29,9 +29,6 @@ export default class FilmsSortPresenter {
   #sortFilmList(sortType) {
     this.#filmsPresenter.clearFilmList();
     switch (sortType) {
-      case SortType.DEFAULT:
-        this.currentSortType = SortType.DEFAULT;
-        break;
       case SortType.DATE:
         this.#sortFilmsByDate();
         this.currentSortType = SortType.DATE;
@@ -39,8 +36,11 @@ export default class FilmsSortPresenter {
       case SortType.RATING:
         this.#sortFilmsByRating();
         this.currentSortType = SortType.RATING;
+        break;
+      default:
+        this.currentSortType = SortType.DEFAULT;
     }
-    this.#filmsPresenter.renderFilms(FILMS_TO_RENDER_QUANTITY);
+    this.#filmsPresenter.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
   }
 
   #sortFilmsByDate() {

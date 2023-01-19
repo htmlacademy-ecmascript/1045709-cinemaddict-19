@@ -123,10 +123,12 @@ const createAddCommentFormTemplate = (commentEmoji) => (`
 `);
 
 const createFilmPopupTemplate = (film) => {
-  const infoTemplate = createInfoTemplate(film.filmInfo);
-  const controlButtonsTemplate = createControlButtonsTemplate(film.userDetails);
-  const commentsTemplate = createCommentsTemplate(film.comments);
-  const formTemplate = createAddCommentFormTemplate(film.commentEmoji);
+  const {filmInfo, userDetails, comments, commentEmoji} = film;
+
+  const infoTemplate = createInfoTemplate(filmInfo);
+  const controlButtonsTemplate = createControlButtonsTemplate(userDetails);
+  const commentsTemplate = createCommentsTemplate(comments);
+  const formTemplate = createAddCommentFormTemplate(commentEmoji);
 
   return (
     `<section class="film-details">
@@ -191,7 +193,7 @@ export default class FilmPopupView extends AbstractStatefulView {
   };
 
   #controlButtonsClickHandler = (evt) => {
-    if (evt.target.tagName === 'BUTTON') {
+    if (evt.target.classList.contains('film-details__control-button')) {
       this.updateElement({
         userDetails: {
           ...this._state.userDetails,
