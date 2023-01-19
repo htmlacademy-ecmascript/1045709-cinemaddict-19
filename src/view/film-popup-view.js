@@ -222,7 +222,10 @@ export default class FilmPopupView extends AbstractStatefulView {
   }
 
   static parseStateToFilm(state) {
-    const film = {...state};
+    const film = {
+      ...state,
+      comments: state.comments.map((comment) => comment.id)
+    };
 
     delete film.scrollPosition;
     delete film.commentEmoji;

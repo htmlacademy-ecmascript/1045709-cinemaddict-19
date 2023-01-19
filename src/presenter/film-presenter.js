@@ -16,7 +16,12 @@ export default class FilmPresenter {
     this.#handleUpdateFilmData = onDataChange;
   }
 
-  init(film) {
+  init(filmData, filmsModel) {
+    const film = {
+      ...filmData,
+      comments: filmsModel.comments.filter((comment) => filmData.comments.includes(comment.id))
+    };
+
     this.#popupPresenter = new FilmPopupPresenter({
       film,
       onControlBtnClick: this.#handleControlButton,
