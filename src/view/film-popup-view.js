@@ -1,8 +1,12 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { humanizeDate } from '../utils.js';
-import { COMMENTS_EMOTIONS, FILM_POPUP_DATE_FORMAT, FILM_COMMENT_DATE_FORMAT } from '../consts.js';
+import { COMMENTS_EMOTIONS, FILM_POPUP_DATE_FORMAT } from '../consts.js';
 
 const DEFAULT_COMMENT_EMOJI = COMMENTS_EMOTIONS[0];
+
+dayjs.extend(relativeTime);
 
 const createInfoTemplate = (filmInfo) => {
   const {title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, duration, genre, description} = filmInfo;
@@ -94,7 +98,7 @@ const createCommentsTemplate = (comments) => (`
         <p class="film-details__comment-text">${comment.comment}</p>
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${comment.author}</span>
-          <span class="film-details__comment-day">${humanizeDate(comment.date, FILM_COMMENT_DATE_FORMAT)}</span>
+          <span class="film-details__comment-day">${dayjs(comment.date).fromNow()}</span>
           <button class="film-details__comment-delete">Delete</button>
         </p>
       </div>

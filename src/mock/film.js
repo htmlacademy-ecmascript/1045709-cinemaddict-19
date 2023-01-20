@@ -24,14 +24,14 @@ const mockComments = [
     id: 1,
     author: 'Pavel O\'Reilly',
     comment: 'a film .',
-    date: '2018-05-11T16:12:32.554Z',
+    date: '2023-01-18T16:12:32.554Z',
     emotion: getRandomArrayElement(COMMENTS_EMOTIONS)
   },
   {
     id: 2,
     author: 'Maks',
     comment: 'a film that changed my life.',
-    date: '1999-04-11T16:12:32.554Z',
+    date: '2023-01-20T15:57:32.554Z',
     emotion: getRandomArrayElement(COMMENTS_EMOTIONS)
   },
   {
