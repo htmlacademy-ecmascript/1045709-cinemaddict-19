@@ -1,8 +1,12 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { humanizeDate } from '../utils.js';
-import { COMMENTS_EMOTIONS, FILM_POPUP_DATE_FORMAT, FILM_COMMENT_DATE_FORMAT } from '../consts.js';
+import { COMMENTS_EMOTIONS, FILM_POPUP_DATE_FORMAT } from '../consts.js';
 
 const DEFAULT_COMMENT_EMOJI = COMMENTS_EMOTIONS[0];
+
+dayjs.extend(relativeTime);
 
 const createInfoTemplate = (filmInfo) => {
   const {title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, duration, genre, description} = filmInfo;
@@ -94,7 +98,7 @@ const createCommentsTemplate = (comments) => (`
         <p class="film-details__comment-text">${comment.comment}</p>
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${comment.author}</span>
-          <span class="film-details__comment-day">${humanizeDate(comment.date, FILM_COMMENT_DATE_FORMAT)}</span>
+          <span class="film-details__comment-day">${dayjs(comment.date).fromNow()}</span>
           <button class="film-details__comment-delete">Delete</button>
         </p>
       </div>
@@ -123,10 +127,12 @@ const createAddCommentFormTemplate = (commentEmoji) => (`
 `);
 
 const createFilmPopupTemplate = (film) => {
-  const infoTemplate = createInfoTemplate(film.filmInfo);
-  const controlButtonsTemplate = createControlButtonsTemplate(film.userDetails);
-  const commentsTemplate = createCommentsTemplate(film.comments);
-  const formTemplate = createAddCommentFormTemplate(film.commentEmoji);
+  const {filmInfo, userDetails, comments, commentEmoji} = film;
+
+  const infoTemplate = createInfoTemplate(filmInfo);
+  const controlButtonsTemplate = createControlButtonsTemplate(userDetails);
+  const commentsTemplate = createCommentsTemplate(comments);
+  const formTemplate = createAddCommentFormTemplate(commentEmoji);
 
   return (
     `<section class="film-details">
@@ -191,7 +197,7 @@ export default class FilmPopupView extends AbstractStatefulView {
   };
 
   #controlButtonsClickHandler = (evt) => {
-    if (evt.target.tagName === 'BUTTON') {
+    if (evt.target.classList.contains('film-details__control-button')) {
       this.updateElement({
         userDetails: {
           ...this._state.userDetails,
@@ -220,7 +226,10 @@ export default class FilmPopupView extends AbstractStatefulView {
   }
 
   static parseStateToFilm(state) {
-    const film = {...state};
+    const film = {
+      ...state,
+      comments: state.comments.map((comment) => comment.id)
+    };
 
     delete film.scrollPosition;
     delete film.commentEmoji;

@@ -20,28 +20,28 @@ export default class FilmsFiltersPresenter {
         emptyFilmsMessage: 'There are no movies in our database'
       },
       watchlist: {
-        filterFilms: [],
+        films: [],
         emptyFilmsMessage: 'There are no movies to watch now'
       },
       history: {
-        filterFilms: [],
+        films: [],
         emptyFilmsMessage: 'There are no watched movies now'
       },
       favorites: {
-        filterFilms: [],
+        films: [],
         emptyFilmsMessage: 'There are no favorite movies now'
       }
     };
 
     this.#films.forEach((film) => {
       if (film.userDetails.watchlist) {
-        this.filters.watchlist.filterFilms.push(film);
+        this.filters.watchlist.films.push(film);
       }
       if (film.userDetails.alreadyWatched) {
-        this.filters.history.filterFilms.push(film);
+        this.filters.history.films.push(film);
       }
       if (film.userDetails.favorite) {
-        this.filters.favorites.filterFilms.push(film);
+        this.filters.favorites.films.push(film);
       }
     });
 
@@ -51,7 +51,7 @@ export default class FilmsFiltersPresenter {
 
   #renderFilters() {
     render(new FiltersView({
-      filmFilters: this.filters
+      filters: this.filters
     }), this.#filtersContainer);
   }
 
