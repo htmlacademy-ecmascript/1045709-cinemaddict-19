@@ -29,6 +29,10 @@ export default class FilmsPresenter {
     this.#filmsModel = filmsModel;
   }
 
+  get films() {
+    return this.#filmsModel.films;
+  }
+
   init() {
     this.#films = [...this.#filmsModel.films];
     this.#renderFilters();
