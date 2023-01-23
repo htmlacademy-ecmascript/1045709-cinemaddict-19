@@ -4,6 +4,7 @@ import { render } from './framework/render.js';
 import { mockComments, mockFilms } from './mock/film.js';
 import FilmsPresenter from './presenter/films-presenter.js';
 import FilmsModel from './model/films-model.js';
+import CommentsModel from './model/comments-model.js';
 
 const siteHeader = document.querySelector('.header');
 const siteMain = document.querySelector('.main');
@@ -14,10 +15,15 @@ const filmsModel = new FilmsModel({
   comments: mockComments
 });
 
+const commentsModel = new CommentsModel({
+  comments: mockComments
+});
+
 const filmsQuantity = filmsModel.films.length.toLocaleString();
 const filmsPresenter = new FilmsPresenter({
   filmsContainer: siteMain,
-  filmsModel
+  filmsModel,
+  commentsModel
 });
 
 
