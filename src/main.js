@@ -3,6 +3,7 @@ import QuantityStatisticsView from './view/quantity-statistics-view.js';
 import { render } from './framework/render.js';
 import { mockComments, mockFilms } from './mock/film.js';
 import FilmsPresenter from './presenter/films-presenter.js';
+import FilterModel from './model/filter-model.js';
 import FilmsModel from './model/films-model.js';
 import CommentsModel from './model/comments-model.js';
 
@@ -19,11 +20,14 @@ const commentsModel = new CommentsModel({
   comments: mockComments
 });
 
+const filterModel = new FilterModel();
+
 const filmsQuantity = filmsModel.films.length.toLocaleString();
 const filmsPresenter = new FilmsPresenter({
   filmsContainer: siteMain,
   filmsModel,
-  commentsModel
+  commentsModel,
+  filterModel
 });
 
 

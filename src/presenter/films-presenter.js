@@ -7,11 +7,11 @@ import FilmListView from '../view/film-list-view.js';
 import EmptyFilmListView from '../view/empty-film-list-view.js';
 import SortView from '../view/sort-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
-import FilmsFiltersPresenter from './films-filters-presenter.js';
+import FiltersPresenter from './films-filters-presenter.js';
 import FilmPresenter from './film-presenter.js';
 import AwardedFilmsPresenter from './awarded-films-presenter.js';
 
-export default class FilmsPresenter {
+export default class FilmListPresenter {
   #filmSectionComponent = new FilmSectionView();
   #filmListComponent = new FilmListView();
   #filmListContainerComponent = new FilmListContainerView();
@@ -20,28 +20,34 @@ export default class FilmsPresenter {
   #filmsContainer = null;
   #filmsModel = null;
   #commentsModel = null;
+  #filterModel = null;
 
   #renderedFilmsCollection = this.#filmListContainerComponent.element.children;
   #filmPresenter = new Map();
   #filtersPresenter = null;
   #currentSortType = SortType.DEFAULT;
 
-  constructor({filmsContainer, filmsModel, commentsModel}) {
+  constructor({filmsContainer, filmsModel, commentsModel, filterModel}) {
     this.#filmsContainer = filmsContainer;
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
+    this.#filterModel = filterModel;
 
     this.#filmsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get films() {
+    const filterType = this.#filterModel.filter;
+    const filteredFilms = this.#filtersPresenter.filters[filterType].filteredFilms;
+
     switch (this.#currentSortType) {
       case SortType.DATE:
-        return [...this.#filmsModel.films].sort((a, b) => humanizeDate(b.filmInfo.release.date, FILM_CARD_DATE_FORMAT) - humanizeDate(a.filmInfo.release.date, FILM_CARD_DATE_FORMAT));
+        return filteredFilms.sort((a, b) => humanizeDate(b.filmInfo.release.date, FILM_CARD_DATE_FORMAT) - humanizeDate(a.filmInfo.release.date, FILM_CARD_DATE_FORMAT));
       case SortType.RATING:
-        return [...this.#filmsModel.films].sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
+        return filteredFilms.sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
       default:
-        return this.#filmsModel.films;
+        return filteredFilms;
     }
   }
 
@@ -72,14 +78,16 @@ export default class FilmsPresenter {
 
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
+      this.#setActiveSortButton(this.#sortComponent.element.querySelector('.sort__button[data-sort-type="default"]'));
     }
   }
 
   renderFilms(toRenderQuantity) {
+    const filmsToRender = this.films;
     const renderedFilmsQuantity = this.#renderedFilmsCollection.length;
     for (let i = renderedFilmsQuantity; i < renderedFilmsQuantity + toRenderQuantity; i++) {
-      this.#renderFilm(this.films[i]);
-      const isLastFilm = !this.films[this.#renderedFilmsCollection.length];
+      this.#renderFilm(filmsToRender[i]);
+      const isLastFilm = !filmsToRender[this.#renderedFilmsCollection.length];
       if (isLastFilm) {
         remove(this.#filmShowMoreBtnComponent);
         return;
@@ -97,15 +105,19 @@ export default class FilmsPresenter {
   }
 
   #renderFilters() {
-    this.#filtersPresenter = new FilmsFiltersPresenter({
+    this.#filtersPresenter = new FiltersPresenter({
       filtersContainer: this.#filmsContainer,
-      films: this.films
+      filterModel: this.#filterModel,
+      filmsModel: this.#filmsModel
     });
+
+    this.#filtersPresenter.init();
   }
 
   #renderSort() {
     this.#sortComponent = new SortView({
-      onSortTypeChange: this.#handleSortTypeChange
+      onSortTypeChange: this.#handleSortTypeChange,
+      currentSortType: this.#currentSortType
     });
 
     render(this.#sortComponent, this.#filmsContainer);
@@ -139,14 +151,20 @@ export default class FilmsPresenter {
     awardedFilmsPresenter.init();
   }
 
-  #handleLoadMoreButtonClick = () => {
-    this.renderFilms(FILMS_TO_RENDER_QUANTITY);
-  };
+  #setActiveSortButton(button) {
+    this.#sortComponent.element.querySelector('.sort__button--active').classList.remove('sort__button--active');
+    button.classList.add('sort__button--active');
+  }
 
-  #handleSortTypeChange = (sortType) => {
+  #handleSortTypeChange = (button, sortType) => {
     this.clearFilmList();
     this.#currentSortType = sortType;
+    this.#setActiveSortButton(button);
     this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
+  };
+
+  #handleLoadMoreButtonClick = () => {
+    this.renderFilms(FILMS_TO_RENDER_QUANTITY);
   };
 
   #handleViewAction = (actionType, updateType, update) => {
