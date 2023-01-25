@@ -1,3 +1,4 @@
+import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -221,7 +222,7 @@ export default class FilmPopupView extends AbstractStatefulView {
       const commentToAdd = {
         id: Math.random(),
         author: 'new Comm',
-        comment: evt.target.value,
+        comment: he.encode(evt.target.value),
         date: Date.now(),
         emotion: this._state.commentEmoji
       };
