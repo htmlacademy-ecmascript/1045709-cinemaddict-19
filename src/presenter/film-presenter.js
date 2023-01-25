@@ -26,6 +26,8 @@ export default class FilmPresenter {
     this.#popupPresenter = new FilmPopupPresenter({
       film,
       onControlBtnClick: this.#handleControlButton,
+      onAddComment: this.#handleAddComment,
+      onDeleteComment: this.#handleDeleteComment
     });
 
     const prevFilmComponent = this.#filmComponent;
@@ -58,6 +60,22 @@ export default class FilmPresenter {
   #handleControlButton = (updatedFilm) => {
     this.#handleUpdateFilmData(
       UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
+      updatedFilm
+    );
+  };
+
+  #handleAddComment = (updatedFilm) => {
+    this.#handleUpdateFilmData(
+      UserAction.ADD_COMMENT,
+      UpdateType.PATCH,
+      updatedFilm
+    );
+  };
+
+  #handleDeleteComment = (updatedFilm) => {
+    this.#handleUpdateFilmData(
+      UserAction.DELETE_COMMENT,
       UpdateType.PATCH,
       updatedFilm
     );

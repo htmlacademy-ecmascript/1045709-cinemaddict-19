@@ -54,13 +54,69 @@ const mockComments = [
     comment: 'a true masterpiece.',
     date: '2000-12-11T16:12:32.554Z',
     emotion: getRandomArrayElement(COMMENTS_EMOTIONS)
+  },
+  {
+    id: 6,
+    author: 'six',
+    comment: '6 comment.',
+    date: '2000-06-11T16:12:32.554Z',
+    emotion: getRandomArrayElement(COMMENTS_EMOTIONS)
+  },
+  {
+    id: 7,
+    author: 'seven',
+    comment: '7 comment.',
+    date: '2004-07-11T16:12:32.554Z',
+    emotion: getRandomArrayElement(COMMENTS_EMOTIONS)
+  },
+  {
+    id: 8,
+    author: 'eight',
+    comment: '8 comment.',
+    date: '2016-10-11T16:12:32.554Z',
+    emotion: getRandomArrayElement(COMMENTS_EMOTIONS)
+  },
+  {
+    id: 9,
+    author: 'nine',
+    comment: '9 comment.',
+    date: '2020-11-11T16:12:32.554Z',
+    emotion: getRandomArrayElement(COMMENTS_EMOTIONS)
+  },
+  {
+    id: 10,
+    author: 'ten',
+    comment: '10 comment.',
+    date: '2021-05-11T16:12:32.554Z',
+    emotion: getRandomArrayElement(COMMENTS_EMOTIONS)
+  },
+  {
+    id: 11,
+    author: 'no',
+    comment: 'test 11.',
+    date: '2007-12-11T16:12:32.554Z',
+    emotion: getRandomArrayElement(COMMENTS_EMOTIONS)
+  },
+  {
+    id: 12,
+    author: 'no',
+    comment: 'test 12.',
+    date: '2005-12-11T16:12:32.554Z',
+    emotion: getRandomArrayElement(COMMENTS_EMOTIONS)
+  },
+  {
+    id: 13,
+    author: 'no',
+    comment: 'test 13.',
+    date: '2003-12-11T16:12:32.554Z',
+    emotion: getRandomArrayElement(COMMENTS_EMOTIONS)
   }
 ];
 
 const mockFilms = [
   {
     id: 1,
-    comments: [1],
+    comments: [1, 2],
     filmInfo: {
       title: 'A Little Pony Without The Carpet',
       alternativeTitle: 'Laziness Who Sold Themselves',
@@ -89,7 +145,7 @@ const mockFilms = [
   },
   {
     id: 2,
-    comments: [2, 4],
+    comments: [3, 4],
     filmInfo: {
       title: 'A The Carpet',
       alternativeTitle: 'Laziness Who Sold Themselves',
@@ -118,7 +174,7 @@ const mockFilms = [
   },
   {
     id: 3,
-    comments: [3, 5],
+    comments: [5, 6],
     filmInfo: {
       title: 'Carpet Second',
       alternativeTitle: 'Laziness Who Sold Themselves',
@@ -148,7 +204,7 @@ const mockFilms = [
   {
     id: 4,
     src: `./images/posters/${getRandomArrayElement(POSTERS)}`,
-    comments: [1, 2],
+    comments: [7, 8],
     filmInfo: {
       title: 'Carpet',
       alternativeTitle: 'Laziness Who Sold Themselves',
@@ -178,7 +234,7 @@ const mockFilms = [
   {
     id: 5,
     src: `./images/posters/${getRandomArrayElement(POSTERS)}`,
-    comments: [5],
+    comments: [9, 10],
     filmInfo: {
       title: 'Without The Carpet',
       alternativeTitle: 'Laziness Who Sold Themselves',
@@ -208,7 +264,7 @@ const mockFilms = [
   {
     id: 6,
     src: `./images/posters/${getRandomArrayElement(POSTERS)}`,
-    comments: [1, 4, 2],
+    comments: [11, 12, 13],
     filmInfo: {
       title: 'Test',
       alternativeTitle: 'test film',

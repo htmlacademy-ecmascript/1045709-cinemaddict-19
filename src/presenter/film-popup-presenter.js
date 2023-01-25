@@ -7,12 +7,14 @@ export default class FilmPopupPresenter {
   #filmPopupComponent = null;
   #film = null;
 
-  constructor({ film, onControlBtnClick }) {
+  constructor({ film, onControlBtnClick, onAddComment, onDeleteComment }) {
     this.#film = film;
     this.#filmPopupComponent = new FilmPopupView({
       film: this.#film,
       onCloseClick: this.#handleCloseClick,
-      onControlBtnClick
+      onControlBtnClick,
+      onAddComment,
+      onDeleteComment
     });
   }
 

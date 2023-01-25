@@ -1,7 +1,10 @@
-export default class CommentsModel {
+import Observable from '../framework/observable.js';
+
+export default class CommentsModel extends Observable {
   #comments = null;
 
   constructor({comments}) {
+    super();
     this.#comments = comments;
   }
 
@@ -10,26 +13,18 @@ export default class CommentsModel {
   }
 
   addComment(updateType, update) {
-    this.#comments = [
-      update,
-      ...this.#comments
-    ];
+    this.#comments = [...this.comments, update.commentToAdd];
+
+    delete update.commentToAdd;
 
     this._notify(updateType, update);
   }
 
   deleteComment(updateType, update) {
-    const index = this.#comments.findIndex((comment) => comment.id === update.id);
+    this.#comments = this.#comments.filter((comment) => comment.id !== update.commentToDelete.id);
 
-    if (index === -1) {
-      throw new Error('Can\'t delete unexisting task');
-    }
+    delete update.commentToDelete;
 
-    this.#comments = [
-      ...this.#comments.slice(0, index),
-      ...this.#comments.slice(index + 1),
-    ];
-
-    this._notify(updateType);
+    this._notify(updateType, update);
   }
 }
