@@ -1,58 +1,98 @@
-import { render } from '../framework/render.js';
+import { remove, render, replace } from '../framework/render.js';
 import FiltersView from '../view/filters-view.js';
+import { UpdateType, FilterType } from '../consts.js';
 
-export default class FilmsFiltersPresenter {
+export default class FiltersPresenter {
   #filtersContainer = null;
-  #films = null;
+  #filterModel = null;
+  #filmsModel = null;
 
-  constructor({filtersContainer, films}) {
+  #filterComponent = null;
+
+  constructor({filtersContainer, filterModel, filmsModel}) {
     this.#filtersContainer = filtersContainer;
-    this.#films = films;
+    this.#filterModel = filterModel;
+    this.#filmsModel = filmsModel;
 
-    this.init();
+    this.#filmsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
-  init() {
+  get filters() {
+    const films = this.#filmsModel.films;
 
-    this.filters = {
+    const filters = {
       all: {
-        filterFilms: this.#films,
-        emptyFilmsMessage: 'There are no movies in our database'
+        type: FilterType.ALL,
+        name: 'All movies',
+        emptyFilmsMessage: 'There are no movies in our database',
+        filteredFilms: [...films]
       },
       watchlist: {
-        films: [],
-        emptyFilmsMessage: 'There are no movies to watch now'
+        type: FilterType.WATCHLIST,
+        name: 'Watchlist',
+        emptyFilmsMessage: 'There are no movies to watch now',
+        filteredFilms: []
       },
       history: {
-        films: [],
-        emptyFilmsMessage: 'There are no watched movies now'
+        type: FilterType.HISTORY,
+        name: 'History',
+        emptyFilmsMessage: 'There are no watched movies now',
+        filteredFilms: []
       },
       favorites: {
-        films: [],
-        emptyFilmsMessage: 'There are no favorite movies now'
+        type: FilterType.FAVORITE,
+        name: 'Favorites',
+        emptyFilmsMessage: 'There are no favorite movies now',
+        filteredFilms: []
       }
     };
 
-    this.#films.forEach((film) => {
+    films.forEach((film) => {
       if (film.userDetails.watchlist) {
-        this.filters.watchlist.films.push(film);
+        filters.watchlist.filteredFilms.push(film);
       }
       if (film.userDetails.alreadyWatched) {
-        this.filters.history.films.push(film);
+        filters.history.filteredFilms.push(film);
       }
       if (film.userDetails.favorite) {
-        this.filters.favorites.films.push(film);
+        filters.favorites.filteredFilms.push(film);
       }
     });
 
-    this.#renderFilters();
-    this.activeFilter = document.querySelector('.main-navigation__item--active').dataset.id;
+    return filters;
   }
 
-  #renderFilters() {
-    render(new FiltersView({
-      filters: this.filters
-    }), this.#filtersContainer);
+  init() {
+    const filters = this.filters;
+    const prevFilterComponent = this.#filterComponent;
+
+    this.#filterComponent = new FiltersView({
+      filters,
+      currentFilterType: this.#filterModel.filter,
+      onFilterTypeChange: this.#handleFilterTypeChange
+    });
+
+    if (prevFilterComponent === null) {
+      render(this.#filterComponent, this.#filtersContainer);
+      return;
+    }
+
+    replace(this.#filterComponent, prevFilterComponent);
+    remove(prevFilterComponent);
+
   }
+
+  #handleModelEvent = () => {
+    this.init();
+  };
+
+  #handleFilterTypeChange = (filterType) => {
+    if (this.#filterModel.filter === filterType) {
+      return;
+    }
+
+    this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
+  };
 
 }

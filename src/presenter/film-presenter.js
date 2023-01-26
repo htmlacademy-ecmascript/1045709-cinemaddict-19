@@ -1,6 +1,7 @@
 import { render, replace, remove } from '../framework/render.js';
 import FilmCardView from '../view/film-card-view.js';
 import FilmPopupPresenter from './film-popup-presenter.js';
+import { UserAction, UpdateType } from '../consts.js';
 
 
 export default class FilmPresenter {
@@ -16,15 +17,17 @@ export default class FilmPresenter {
     this.#handleUpdateFilmData = onDataChange;
   }
 
-  init(filmData, filmsModel) {
+  init(filmData, comments) {
     const film = {
       ...filmData,
-      comments: filmsModel.comments.filter((comment) => filmData.comments.includes(comment.id))
+      comments: comments.filter((comment) => filmData.comments.includes(comment.id))
     };
 
     this.#popupPresenter = new FilmPopupPresenter({
       film,
       onControlBtnClick: this.#handleControlButton,
+      onAddComment: this.#handleAddComment,
+      onDeleteComment: this.#handleDeleteComment
     });
 
     const prevFilmComponent = this.#filmComponent;
@@ -55,7 +58,27 @@ export default class FilmPresenter {
   };
 
   #handleControlButton = (updatedFilm) => {
-    this.#handleUpdateFilmData(updatedFilm);
+    this.#handleUpdateFilmData(
+      UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
+      updatedFilm
+    );
+  };
+
+  #handleAddComment = (updatedFilm) => {
+    this.#handleUpdateFilmData(
+      UserAction.ADD_COMMENT,
+      UpdateType.PATCH,
+      updatedFilm
+    );
+  };
+
+  #handleDeleteComment = (updatedFilm) => {
+    this.#handleUpdateFilmData(
+      UserAction.DELETE_COMMENT,
+      UpdateType.PATCH,
+      updatedFilm
+    );
   };
 
 }
