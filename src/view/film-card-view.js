@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDate } from '../utils.js';
-import { FILM_CARD_DATE_FORMAT } from '../consts.js';
+import { DateFormat } from '../consts.js';
 
 const createFilmCardTemplate = (film) => {
   const {comments} = film;
@@ -8,7 +8,7 @@ const createFilmCardTemplate = (film) => {
   const {alreadyWatched, favorite, watchlist} = film.userDetails;
   const {date} = film.filmInfo.release;
 
-  const dateMarkup = humanizeDate(date, FILM_CARD_DATE_FORMAT);
+  const dateMarkup = humanizeDate(date, DateFormat.FILM_CARD);
 
   return (
     `<article class="film-card">

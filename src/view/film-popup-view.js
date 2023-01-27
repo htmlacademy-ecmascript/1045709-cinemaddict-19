@@ -3,7 +3,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { humanizeDate } from '../utils.js';
-import { COMMENTS_EMOTIONS, FILM_POPUP_DATE_FORMAT } from '../consts.js';
+import { COMMENTS_EMOTIONS, DateFormat } from '../consts.js';
 
 const DEFAULT_COMMENT_EMOJI = COMMENTS_EMOTIONS[0];
 
@@ -11,7 +11,7 @@ dayjs.extend(relativeTime);
 
 const createInfoTemplate = (filmInfo) => {
   const {title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, duration, genre, description} = filmInfo;
-  const releaseDateMarkup = humanizeDate(filmInfo.release.date, FILM_POPUP_DATE_FORMAT);
+  const releaseDateMarkup = humanizeDate(filmInfo.release.date, DateFormat.FILM_POPUP);
 
   return (`
       <div class="film-details__poster">
