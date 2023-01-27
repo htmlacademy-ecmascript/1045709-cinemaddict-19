@@ -60,7 +60,7 @@ export default class FilmPresenter {
   #handleControlButton = (updatedFilm) => {
     this.#handleUpdateFilmData(
       UserAction.UPDATE_FILM,
-      UpdateType.PATCH,
+      UpdateType.MINOR,
       updatedFilm
     );
   };

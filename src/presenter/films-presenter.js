@@ -184,13 +184,14 @@ export default class FilmListPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
+    const toRenderQuantity = this.#renderedFilmsCollection.length < DEFAULT_RENDERED_FILMS_QUANTITY ? DEFAULT_RENDERED_FILMS_QUANTITY : this.#renderedFilmsCollection.length;
     switch (updateType) {
       case UpdateType.PATCH:
         this.#filmPresenter.get(data.id).init(data, this.comments);
         break;
       case UpdateType.MINOR:
         this.clearFilmList();
-        this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
+        this.renderFilms(toRenderQuantity);
         break;
       case UpdateType.MAJOR:
         this.clearFilmList({resetSortType: true});
