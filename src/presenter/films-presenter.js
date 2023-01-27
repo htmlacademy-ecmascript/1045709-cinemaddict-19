@@ -180,6 +180,8 @@ export default class FilmListPresenter {
       case UserAction.DELETE_COMMENT:
         this.#commentsModel.deleteComment(updateType, update);
         break;
+      default:
+        throw new Error(`Unknown action type: ${actionType}`);
     }
   };
 
@@ -197,6 +199,8 @@ export default class FilmListPresenter {
         this.clearFilmList({resetSortType: true});
         this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
         break;
+      default:
+        throw new Error(`Unknown update type: ${updateType}`);
     }
   };
 
