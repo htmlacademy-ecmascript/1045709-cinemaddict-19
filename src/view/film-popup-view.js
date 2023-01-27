@@ -2,7 +2,7 @@ import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { humanizeDate } from '../utils.js';
+import { humanizeDate, isCtrlPlusEnterPressed } from '../utils.js';
 import { COMMENTS_EMOTIONS, DateFormat } from '../consts.js';
 
 const DEFAULT_COMMENT_EMOJI = COMMENTS_EMOTIONS[0];
@@ -218,7 +218,7 @@ export default class FilmPopupView extends AbstractStatefulView {
   };
 
   #addCommentKeydownHandler = (evt) => {
-    if (evt.ctrlKey && evt.code === 'Enter') {
+    if (isCtrlPlusEnterPressed(evt)) {
       const commentToAdd = {
         id: Math.random(),
         author: 'new Comm',
