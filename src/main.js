@@ -6,14 +6,18 @@ import FilmsPresenter from './presenter/films-presenter.js';
 import FilterModel from './model/filter-model.js';
 import FilmsModel from './model/films-model.js';
 import CommentsModel from './model/comments-model.js';
+import FilmsApiService from './films-api-service.js';
+
+const AUTHORIZATION = 'Basic tKF54Tgh3jd';
+const END_POINT = 'https://19.ecmascript.pages.academy/cinemaddict';
 
 const siteHeader = document.querySelector('.header');
 const siteMain = document.querySelector('.main');
 const siteFooter = document.querySelector('.footer__statistics');
 
 const filmsModel = new FilmsModel({
-  films: mockFilms,
-  comments: mockComments
+  filmsApiService: new FilmsApiService(END_POINT, AUTHORIZATION),
+  mockFilms
 });
 
 const commentsModel = new CommentsModel({
