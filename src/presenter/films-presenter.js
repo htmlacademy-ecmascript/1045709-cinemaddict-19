@@ -4,7 +4,7 @@ import { humanizeDate } from '../utils.js';
 import FilmSectionView from '../view/film-section-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
-import EmptyFilmListView from '../view/empty-film-list-view.js';
+//import EmptyFilmListView from '../view/empty-film-list-view.js';
 import LoadingView from '../view/loading-view.js';
 import SortView from '../view/sort-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
@@ -64,11 +64,11 @@ export default class FilmListPresenter {
 
   init() {
     this.#renderFilters();
-    if (this.films.length === 0) {
-      this.#renderFilmsContainers();
-      this.#renderEmptyFilmList();
-      return;
-    }
+    // if (this.films.length === 0) {
+    //   this.#renderFilmsContainers();
+    //   this.#renderEmptyFilmList();
+    //   return;
+    // }
     this.#renderSort();
     this.#renderFilmsContainers();
     this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
@@ -111,7 +111,12 @@ export default class FilmListPresenter {
       filmListContainer: this.#filmListContainerComponent.element,
       onDataChange: this.#handleViewAction
     });
-    filmPresenter.init(film, this.comments);
+    this.#commentsModel.getFilmComments(film.id).then((comments) => {
+      filmPresenter.init({
+        ...film,
+        comments
+      });
+    });
     this.#filmPresenter.set(film.id, filmPresenter);
   }
 
@@ -144,12 +149,12 @@ export default class FilmListPresenter {
     render(this.#filmListContainerComponent, this.#filmListComponent.element);
   }
 
-  #renderEmptyFilmList() {
-    render(new EmptyFilmListView({
-      filters: this.#filtersPresenter.filters,
-      activeFilter: this.#filtersPresenter.activeFilter
-    }), this.#filmSectionComponent.element);
-  }
+  // #renderEmptyFilmList() {
+  //   render(new EmptyFilmListView({
+  //     filters: this.#filtersPresenter.filters,
+  //     activeFilter: this.#filterModel.filter
+  //   }), this.#filmSectionComponent.element);
+  // }
 
   #renderShowMoreBtn() {
     this.#filmShowMoreBtnComponent = new ShowMoreBtnView({

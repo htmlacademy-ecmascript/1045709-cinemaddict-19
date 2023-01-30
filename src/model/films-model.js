@@ -5,19 +5,13 @@ export default class FilmsModel extends Observable {
   #filmsApiService = null;
   #films = [];
 
-  constructor({filmsApiService, mockFilms}) {
+  constructor({filmsApiService}) {
     super();
     this.#filmsApiService = filmsApiService;
-    this.#films = mockFilms;
-
   }
 
   get films() {
     return this.#films;
-  }
-
-  set films(films) {
-    this.#films = films;
   }
 
   async init() {
