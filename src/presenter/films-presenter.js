@@ -208,7 +208,12 @@ export default class FilmListPresenter {
     const toRenderQuantity = this.#renderedFilmsCollection.length < DEFAULT_RENDERED_FILMS_QUANTITY ? DEFAULT_RENDERED_FILMS_QUANTITY : this.#renderedFilmsCollection.length;
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#filmPresenter.get(data.id).init(data, this.comments);
+        this.#commentsModel.getFilmComments(data.id).then((comments) => {
+          this.#filmPresenter.get(data.id).init({
+            ...data,
+            comments
+          });
+        });
         break;
       case UpdateType.MINOR:
         this.clearFilmList();

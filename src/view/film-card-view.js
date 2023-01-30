@@ -62,7 +62,6 @@ export default class FilmCardView extends AbstractView {
     if (evt.target.classList.contains('film-card__controls-item')) {
       this.#handleControlButtonClick({
         ...this.#film,
-        comments: this.#film.comments.map((comment) => comment.id),
         userDetails: {
           ...this.#film.userDetails,
           [evt.target.dataset.userDetail]: !this.#film.userDetails[evt.target.dataset.userDetail],

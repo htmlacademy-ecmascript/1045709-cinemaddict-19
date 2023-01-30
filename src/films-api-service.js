@@ -27,7 +27,7 @@ export default class FilmsApiService extends ApiService {
   #adaptToServer(film) {
     const adaptedFilm = {
       'id': film.id,
-      'comments': film.comments,
+      'comments': [...film.comments].map((comment) => comment.id),
       'film_info': {
         ...film.filmInfo,
         'age_rating': film.filmInfo.ageRating,
@@ -47,7 +47,7 @@ export default class FilmsApiService extends ApiService {
 
     delete adaptedFilm.film_info.ageRating;
     delete adaptedFilm.film_info.alternativeTitle;
-    delete adaptedFilm.film_info.ageRating;
+    delete adaptedFilm.film_info.totalRating;
     delete adaptedFilm.user_details.alreadyWatched;
     delete adaptedFilm.user_details.watchingDate;
 
