@@ -1,17 +1,15 @@
 import Observable from '../framework/observable.js';
+import { UpdateType } from '../consts.js';
 
 export default class FilmsModel extends Observable {
   #filmsApiService = null;
-  #films = null;
+  #films = [];
 
   constructor({filmsApiService, mockFilms}) {
     super();
     this.#filmsApiService = filmsApiService;
     this.#films = mockFilms;
 
-    this.#filmsApiService.films.then((films) => {
-      console.log(films.map(this.#adaptToClient));
-    });
   }
 
   get films() {
@@ -22,7 +20,19 @@ export default class FilmsModel extends Observable {
     this.#films = films;
   }
 
-  updateFilm(updatedType, update) {
+  async init() {
+    try {
+      const films = await this.#filmsApiService.films;
+      this.#films = films.map(this.#adaptToClient);
+    } catch(err) {
+      this.#films = [];
+    }
+
+    this._notify(UpdateType.INIT);
+  }
+
+
+  async updateFilm(updatedType, update) {
     const index = this.#films.findIndex((film) => film.id === update.id);
 
     if (index === -1) {

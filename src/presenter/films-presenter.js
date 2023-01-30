@@ -1,10 +1,11 @@
-import { remove, render } from '../framework/render.js';
+import { remove, render, RenderPosition } from '../framework/render.js';
 import { UpdateType, UserAction, SortType, DateFormat} from '../consts';
 import { humanizeDate } from '../utils.js';
 import FilmSectionView from '../view/film-section-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
 import EmptyFilmListView from '../view/empty-film-list-view.js';
+import LoadingView from '../view/loading-view.js';
 import SortView from '../view/sort-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
 import FiltersPresenter from './films-filters-presenter.js';
@@ -18,6 +19,7 @@ export default class FilmListPresenter {
   #filmSectionComponent = new FilmSectionView();
   #filmListComponent = new FilmListView();
   #filmListContainerComponent = new FilmListContainerView();
+  #loadingComponent = new LoadingView();
   #sortComponent = null;
   #filmShowMoreBtnComponent = null;
   #filmsContainer = null;
@@ -29,6 +31,7 @@ export default class FilmListPresenter {
   #filmPresenter = new Map();
   #filtersPresenter = null;
   #currentSortType = SortType.DEFAULT;
+  #isLoading = true;
 
   constructor({filmsContainer, filmsModel, commentsModel, filterModel}) {
     this.#filmsContainer = filmsContainer;
@@ -87,6 +90,10 @@ export default class FilmListPresenter {
   }
 
   renderFilms(toRenderQuantity) {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
     const filmsToRender = this.films;
     const renderedFilmsQuantity = this.#renderedFilmsCollection.length;
     for (let i = renderedFilmsQuantity; i < renderedFilmsQuantity + toRenderQuantity; i++) {
@@ -116,6 +123,10 @@ export default class FilmListPresenter {
     });
 
     this.#filtersPresenter.init();
+  }
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#filmListComponent.element, RenderPosition.AFTERBEGIN);
   }
 
   #renderSort() {
@@ -200,6 +211,11 @@ export default class FilmListPresenter {
         break;
       case UpdateType.MAJOR:
         this.clearFilmList({resetSortType: true});
+        this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
         break;
       default:

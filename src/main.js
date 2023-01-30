@@ -39,3 +39,4 @@ render(new UserRankView(), siteHeader);
 render(new QuantityStatisticsView({filmsQuantity}), siteFooter);
 
 filmsPresenter.init();
+filmsModel.init();
