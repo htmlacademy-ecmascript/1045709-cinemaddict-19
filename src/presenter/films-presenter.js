@@ -27,7 +27,6 @@ export default class FilmListPresenter {
   #commentsModel = null;
   #filterModel = null;
 
-  #renderedFilmsCollection = this.#filmListContainerComponent.element.children;
   #filmPresenter = new Map();
   #filtersPresenter = null;
   #currentSortType = SortType.DEFAULT;
@@ -95,10 +94,10 @@ export default class FilmListPresenter {
       return;
     }
     const filmsToRender = this.films;
-    const renderedFilmsQuantity = this.#renderedFilmsCollection.length;
+    const renderedFilmsQuantity = this.#filmListContainerComponent.element.children.length;
     for (let i = renderedFilmsQuantity; i < renderedFilmsQuantity + toRenderQuantity; i++) {
       this.#renderFilm(filmsToRender[i]);
-      const isLastFilm = !filmsToRender[this.#renderedFilmsCollection.length];
+      const isLastFilm = filmsToRender[i] === filmsToRender[filmsToRender.length - 1];
       if (isLastFilm) {
         remove(this.#filmShowMoreBtnComponent);
         return;
@@ -205,7 +204,6 @@ export default class FilmListPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
-    const toRenderQuantity = this.#renderedFilmsCollection.length < DEFAULT_RENDERED_FILMS_QUANTITY ? DEFAULT_RENDERED_FILMS_QUANTITY : this.#renderedFilmsCollection.length;
     switch (updateType) {
       case UpdateType.PATCH:
         this.#commentsModel.getFilmComments(data.id).then((comments) => {
@@ -217,7 +215,7 @@ export default class FilmListPresenter {
         break;
       case UpdateType.MINOR:
         this.clearFilmList();
-        this.renderFilms(toRenderQuantity);
+        this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
         break;
       case UpdateType.MAJOR:
         this.clearFilmList({resetSortType: true});
