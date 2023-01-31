@@ -6,14 +6,16 @@ import { UserAction, UpdateType } from '../consts.js';
 
 export default class FilmPresenter {
   #filmListContainer = null;
+  #currentFilterType = null;
   #handleUpdateFilmData = null;
 
   #filmComponent = null;
 
   #popupPresenter = null;
 
-  constructor({filmListContainer, onDataChange}) {
+  constructor({filmListContainer, currentFilterType, onDataChange}) {
     this.#filmListContainer = filmListContainer;
+    this.#currentFilterType = currentFilterType;
     this.#handleUpdateFilmData = onDataChange;
   }
 
@@ -52,10 +54,13 @@ export default class FilmPresenter {
     this.#popupPresenter.showPopup();
   };
 
-  #handleControlButton = (updatedFilm) => {
+  #handleControlButton = (updatedFilm, controlFilter) => {
+    if (controlFilter === this.#currentFilterType) {
+      this.destroy();
+    }
     this.#handleUpdateFilmData(
       UserAction.UPDATE_FILM,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       updatedFilm
     );
   };

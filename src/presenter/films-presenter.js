@@ -108,6 +108,7 @@ export default class FilmListPresenter {
   #renderFilm(film) {
     const filmPresenter = new FilmPresenter({
       filmListContainer: this.#filmListContainerComponent.element,
+      currentFilterType: this.#filterModel.filter,
       onDataChange: this.#handleViewAction
     });
     this.#commentsModel.getFilmComments(film.id).then((comments) => {
