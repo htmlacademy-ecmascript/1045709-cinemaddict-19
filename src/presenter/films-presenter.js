@@ -108,15 +108,11 @@ export default class FilmListPresenter {
   #renderFilm(film) {
     const filmPresenter = new FilmPresenter({
       filmListContainer: this.#filmListContainerComponent.element,
+      commentsModel: this.#commentsModel,
       currentFilterType: this.#filterModel.filter,
       onDataChange: this.#handleViewAction
     });
-    this.#commentsModel.getFilmComments(film.id).then((comments) => {
-      filmPresenter.init({
-        ...film,
-        comments
-      });
-    });
+    filmPresenter.init(film);
     this.#filmPresenter.set(film.id, filmPresenter);
   }
 
@@ -207,12 +203,7 @@ export default class FilmListPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#commentsModel.getFilmComments(data.id).then((comments) => {
-          this.#filmPresenter.get(data.id).init({
-            ...data,
-            comments
-          });
-        });
+        this.#filmPresenter.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
         this.clearFilmList();

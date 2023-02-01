@@ -6,6 +6,7 @@ import { UserAction, UpdateType } from '../consts.js';
 
 export default class FilmPresenter {
   #filmListContainer = null;
+  #commentsModel = null;
   #currentFilterType = null;
   #handleUpdateFilmData = null;
 
@@ -13,8 +14,9 @@ export default class FilmPresenter {
 
   #popupPresenter = null;
 
-  constructor({filmListContainer, currentFilterType, onDataChange}) {
+  constructor({filmListContainer, commentsModel, currentFilterType, onDataChange}) {
     this.#filmListContainer = filmListContainer;
+    this.#commentsModel = commentsModel;
     this.#currentFilterType = currentFilterType;
     this.#handleUpdateFilmData = onDataChange;
   }
@@ -22,9 +24,10 @@ export default class FilmPresenter {
   init(film) {
     this.#popupPresenter = new FilmPopupPresenter({
       film,
-      onControlBtnClick: this.#handleControlButton,
-      onAddComment: this.#handleAddComment,
-      onDeleteComment: this.#handleDeleteComment
+      commentsModel: this.#commentsModel,
+      handleControlButton: this.#handleControlButton,
+      handleAddComment: this.#handleAddComment,
+      handleDeleteComment: this.#handleDeleteComment
     });
 
     const prevFilmComponent = this.#filmComponent;

@@ -6,26 +6,38 @@ let openedPopup = null;
 export default class FilmPopupPresenter {
   #filmPopupComponent = null;
   #film = null;
+  #commentsModel = null;
 
-  constructor({ film, onControlBtnClick, onAddComment, onDeleteComment }) {
+  #handleControlButton = null;
+  #handleAddComment = null;
+  #handleDeleteComment = null;
+
+  constructor({ film, commentsModel, handleControlButton, handleAddComment, handleDeleteComment }) {
     this.#film = film;
-    this.#filmPopupComponent = new FilmPopupView({
-      film: this.#film,
-      onCloseClick: this.#handleCloseClick,
-      onControlBtnClick,
-      onAddComment,
-      onDeleteComment
-    });
+    this.#commentsModel = commentsModel;
+
+    this.#handleControlButton = handleControlButton;
+    this.#handleAddComment = handleAddComment;
+    this.#handleDeleteComment = handleDeleteComment;
   }
 
   showPopup() {
-    if (openedPopup) {
-      openedPopup.closePopup();
-    }
-    document.body.classList.add('hide-overflow');
-    document.body.appendChild(this.#filmPopupComponent.element);
-    document.addEventListener('keydown', this.#closePopupKeydownHandler);
-    openedPopup = this;
+    this.#commentsModel.getFilmComments(this.#film.id).then((comments) => {
+      if (openedPopup) {
+        openedPopup.closePopup();
+      }
+      this.#filmPopupComponent = new FilmPopupView({
+        film: {...this.#film, comments},
+        onCloseClick: this.#handleCloseClick,
+        onControlBtnClick: this.#handleControlButton,
+        onAddComment: this.#handleAddComment,
+        onDeleteComment: this.#handleDeleteComment
+      });
+      document.body.classList.add('hide-overflow');
+      document.body.appendChild(this.#filmPopupComponent.element);
+      document.addEventListener('keydown', this.#closePopupKeydownHandler);
+      openedPopup = this;
+    });
   }
 
   closePopup() {
