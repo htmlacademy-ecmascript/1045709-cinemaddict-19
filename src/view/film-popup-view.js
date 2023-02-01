@@ -220,10 +220,8 @@ export default class FilmPopupView extends AbstractStatefulView {
   #addCommentKeydownHandler = (evt) => {
     if (isCtrlPlusEnterPressed(evt)) {
       const commentToAdd = {
-        id: Math.random(),
-        author: 'new Comm',
+        id: Math.random().toString(),
         comment: he.encode(evt.target.value),
-        date: Date.now(),
         emotion: this._state.commentEmoji
       };
       this.updateElement({

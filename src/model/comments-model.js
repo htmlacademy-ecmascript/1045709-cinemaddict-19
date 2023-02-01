@@ -15,8 +15,7 @@ export default class CommentsModel extends Observable {
 
   async addComment(updateType, update) {
     try {
-      const newComment = await this.#commentsApiService.addComment(update.id, update.commentToAdd);
-      this.#comments = [...this.#comments, newComment];
+      this.#commentsApiService.addComment(update.id, update.commentToAdd);
       delete update.commentToAdd;
       this._notify(updateType, update);
     } catch(err) {
