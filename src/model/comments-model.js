@@ -2,7 +2,6 @@ import Observable from '../framework/observable.js';
 
 export default class CommentsModel extends Observable {
   #commentsApiService = null;
-  #comments = [];
 
   constructor({commentsApiService}) {
     super();
@@ -25,8 +24,7 @@ export default class CommentsModel extends Observable {
 
   async deleteComment(updateType, update) {
     try {
-      await this.#commentsApiService.deleteComment(update.commentToDelete.id);
-      this.#comments = this.#comments.filter((comment) => comment.id !== update.commentToDelete.id);
+      this.#commentsApiService.deleteComment(update.commentToDelete.id);
       delete update.commentToDelete;
       this._notify(updateType, update);
     } catch(err) {

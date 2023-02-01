@@ -193,6 +193,7 @@ export default class FilmListPresenter {
         this.#commentsModel.addComment(updateType, update);
         break;
       case UserAction.DELETE_COMMENT:
+        this.#filmsModel.updateFilm(updateType, update);
         this.#commentsModel.deleteComment(updateType, update);
         break;
       default:
