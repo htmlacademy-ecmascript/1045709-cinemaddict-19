@@ -2,8 +2,8 @@ import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { humanizeDate } from '../utils.js';
-import { COMMENTS_EMOTIONS, FILM_POPUP_DATE_FORMAT } from '../consts.js';
+import { humanizeDate, isCtrlPlusEnterPressed } from '../utils.js';
+import { COMMENTS_EMOTIONS, DateFormat } from '../consts.js';
 
 const DEFAULT_COMMENT_EMOJI = COMMENTS_EMOTIONS[0];
 
@@ -11,7 +11,7 @@ dayjs.extend(relativeTime);
 
 const createInfoTemplate = (filmInfo) => {
   const {title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, duration, genre, description} = filmInfo;
-  const releaseDateMarkup = humanizeDate(filmInfo.release.date, FILM_POPUP_DATE_FORMAT);
+  const releaseDateMarkup = humanizeDate(filmInfo.release.date, DateFormat.FILM_POPUP);
 
   return (`
       <div class="film-details__poster">
@@ -218,12 +218,10 @@ export default class FilmPopupView extends AbstractStatefulView {
   };
 
   #addCommentKeydownHandler = (evt) => {
-    if (evt.ctrlKey && evt.code === 'Enter') {
+    if (isCtrlPlusEnterPressed(evt)) {
       const commentToAdd = {
-        id: Math.random(),
-        author: 'new Comm',
+        id: Math.random().toString(),
         comment: he.encode(evt.target.value),
-        date: Date.now(),
         emotion: this._state.commentEmoji
       };
       this.updateElement({
@@ -240,9 +238,9 @@ export default class FilmPopupView extends AbstractStatefulView {
 
   #deleteCommentClickHandler = (evt) => {
     if (evt.target.classList.contains('film-details__comment-delete')) {
-      const commentToDelete = this._state.comments.find((comment) => comment.id === Number(evt.target.dataset.id));
+      const commentToDelete = this._state.comments.find((comment) => comment.id === evt.target.dataset.id);
       this.updateElement({
-        comments: this._state.comments.filter((comment) => comment.id !== Number(evt.target.dataset.id)),
+        comments: this._state.comments.filter((comment) => comment.id !== evt.target.dataset.id),
         scrollPosition: this.element.scrollTop
       });
       this.#handleDeleteCommentClick({

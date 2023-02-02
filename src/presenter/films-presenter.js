@@ -1,20 +1,25 @@
-import { remove, render } from '../framework/render.js';
-import { UpdateType, UserAction, SortType, DEFAULT_RENDERED_FILMS_QUANTITY, FILMS_TO_RENDER_QUANTITY, FILM_CARD_DATE_FORMAT} from '../consts';
+import { remove, render, RenderPosition } from '../framework/render.js';
+import { UpdateType, UserAction, SortType, DateFormat} from '../consts';
 import { humanizeDate } from '../utils.js';
 import FilmSectionView from '../view/film-section-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
-import EmptyFilmListView from '../view/empty-film-list-view.js';
+//import EmptyFilmListView from '../view/empty-film-list-view.js';
+import LoadingView from '../view/loading-view.js';
 import SortView from '../view/sort-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
 import FiltersPresenter from './films-filters-presenter.js';
 import FilmPresenter from './film-presenter.js';
 import AwardedFilmsPresenter from './awarded-films-presenter.js';
 
+const DEFAULT_RENDERED_FILMS_QUANTITY = 5;
+const FILMS_TO_RENDER_QUANTITY = 5;
+
 export default class FilmListPresenter {
   #filmSectionComponent = new FilmSectionView();
   #filmListComponent = new FilmListView();
   #filmListContainerComponent = new FilmListContainerView();
+  #loadingComponent = new LoadingView();
   #sortComponent = null;
   #filmShowMoreBtnComponent = null;
   #filmsContainer = null;
@@ -22,10 +27,10 @@ export default class FilmListPresenter {
   #commentsModel = null;
   #filterModel = null;
 
-  #renderedFilmsCollection = this.#filmListContainerComponent.element.children;
   #filmPresenter = new Map();
   #filtersPresenter = null;
   #currentSortType = SortType.DEFAULT;
+  #isLoading = true;
 
   constructor({filmsContainer, filmsModel, commentsModel, filterModel}) {
     this.#filmsContainer = filmsContainer;
@@ -44,7 +49,7 @@ export default class FilmListPresenter {
 
     switch (this.#currentSortType) {
       case SortType.DATE:
-        return filteredFilms.sort((a, b) => humanizeDate(b.filmInfo.release.date, FILM_CARD_DATE_FORMAT) - humanizeDate(a.filmInfo.release.date, FILM_CARD_DATE_FORMAT));
+        return filteredFilms.sort((a, b) => humanizeDate(b.filmInfo.release.date, DateFormat.FILM_CARD) - humanizeDate(a.filmInfo.release.date, DateFormat.FILM_CARD));
       case SortType.RATING:
         return filteredFilms.sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
       default:
@@ -58,11 +63,11 @@ export default class FilmListPresenter {
 
   init() {
     this.#renderFilters();
-    if (this.films.length === 0) {
-      this.#renderFilmsContainers();
-      this.#renderEmptyFilmList();
-      return;
-    }
+    // if (this.films.length === 0) {
+    //   this.#renderFilmsContainers();
+    //   this.#renderEmptyFilmList();
+    //   return;
+    // }
     this.#renderSort();
     this.#renderFilmsContainers();
     this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
@@ -84,11 +89,15 @@ export default class FilmListPresenter {
   }
 
   renderFilms(toRenderQuantity) {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
     const filmsToRender = this.films;
-    const renderedFilmsQuantity = this.#renderedFilmsCollection.length;
+    const renderedFilmsQuantity = this.#filmListContainerComponent.element.children.length;
     for (let i = renderedFilmsQuantity; i < renderedFilmsQuantity + toRenderQuantity; i++) {
       this.#renderFilm(filmsToRender[i]);
-      const isLastFilm = !filmsToRender[this.#renderedFilmsCollection.length];
+      const isLastFilm = filmsToRender[i] === filmsToRender[filmsToRender.length - 1];
       if (isLastFilm) {
         remove(this.#filmShowMoreBtnComponent);
         return;
@@ -99,9 +108,11 @@ export default class FilmListPresenter {
   #renderFilm(film) {
     const filmPresenter = new FilmPresenter({
       filmListContainer: this.#filmListContainerComponent.element,
+      commentsModel: this.#commentsModel,
+      currentFilterType: this.#filterModel.filter,
       onDataChange: this.#handleViewAction
     });
-    filmPresenter.init(film, this.comments);
+    filmPresenter.init(film);
     this.#filmPresenter.set(film.id, filmPresenter);
   }
 
@@ -113,6 +124,10 @@ export default class FilmListPresenter {
     });
 
     this.#filtersPresenter.init();
+  }
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#filmListComponent.element, RenderPosition.AFTERBEGIN);
   }
 
   #renderSort() {
@@ -130,12 +145,12 @@ export default class FilmListPresenter {
     render(this.#filmListContainerComponent, this.#filmListComponent.element);
   }
 
-  #renderEmptyFilmList() {
-    render(new EmptyFilmListView({
-      filters: this.#filtersPresenter.filters,
-      activeFilter: this.#filtersPresenter.activeFilter
-    }), this.#filmSectionComponent.element);
-  }
+  // #renderEmptyFilmList() {
+  //   render(new EmptyFilmListView({
+  //     filters: this.#filtersPresenter.filters,
+  //     activeFilter: this.#filterModel.filter
+  //   }), this.#filmSectionComponent.element);
+  // }
 
   #renderShowMoreBtn() {
     this.#filmShowMoreBtnComponent = new ShowMoreBtnView({
@@ -178,15 +193,18 @@ export default class FilmListPresenter {
         this.#commentsModel.addComment(updateType, update);
         break;
       case UserAction.DELETE_COMMENT:
+        this.#filmsModel.updateFilm(updateType, update);
         this.#commentsModel.deleteComment(updateType, update);
         break;
+      default:
+        throw new Error(`Unknown action type: ${actionType}`);
     }
   };
 
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#filmPresenter.get(data.id).init(data, this.comments);
+        this.#filmPresenter.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
         this.clearFilmList();
@@ -196,6 +214,13 @@ export default class FilmListPresenter {
         this.clearFilmList({resetSortType: true});
         this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
+        break;
+      default:
+        throw new Error(`Unknown update type: ${updateType}`);
     }
   };
 

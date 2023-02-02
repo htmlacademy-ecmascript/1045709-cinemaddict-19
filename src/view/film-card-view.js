@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDate } from '../utils.js';
-import { FILM_CARD_DATE_FORMAT } from '../consts.js';
+import { FilterType, DateFormat } from '../consts.js';
 
 const createFilmCardTemplate = (film) => {
   const {comments} = film;
@@ -8,7 +8,7 @@ const createFilmCardTemplate = (film) => {
   const {alreadyWatched, favorite, watchlist} = film.userDetails;
   const {date} = film.filmInfo.release;
 
-  const dateMarkup = humanizeDate(date, FILM_CARD_DATE_FORMAT);
+  const dateMarkup = humanizeDate(date, DateFormat.FILM_CARD);
 
   return (
     `<article class="film-card">
@@ -25,9 +25,22 @@ const createFilmCardTemplate = (film) => {
         <span class="film-card__comments">${comments.length} comments</span>
       </a>
       <div class="film-card__controls">
-        <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${watchlist ? 'film-card__controls-item--active' : ''}" data-user-detail="watchlist" type="button">Add to watchlist</button>
-        <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${alreadyWatched ? 'film-card__controls-item--active' : ''}" data-user-detail="alreadyWatched" type="button">Mark as watched</button>
-        <button class="film-card__controls-item film-card__controls-item--favorite ${favorite ? 'film-card__controls-item--active' : ''}" data-user-detail="favorite" type="button">Mark as favorite</button>
+
+        <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${watchlist ? 'film-card__controls-item--active' : ''}"
+        data-user-detail="watchlist" data-filter="${FilterType.WATCHLIST}" type="button">
+          Add to watchlist
+        </button>
+
+        <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${alreadyWatched ? 'film-card__controls-item--active' : ''}"
+        data-user-detail="alreadyWatched" data-filter="${FilterType.HISTORY}" type="button">
+          Mark as watched
+        </button>
+
+        <button class="film-card__controls-item film-card__controls-item--favorite ${favorite ? 'film-card__controls-item--active' : ''}"
+        data-user-detail="favorite" data-filter="${FilterType.FAVORITE}" type="button">
+          Mark as favorite
+        </button>
+
       </div>
     </article>`
   );
@@ -60,14 +73,14 @@ export default class FilmCardView extends AbstractView {
 
   #controlButtonsClickHandler = (evt) => {
     if (evt.target.classList.contains('film-card__controls-item')) {
-      this.#handleControlButtonClick({
+      const updatedFilm = {
         ...this.#film,
-        comments: this.#film.comments.map((comment) => comment.id),
         userDetails: {
           ...this.#film.userDetails,
           [evt.target.dataset.userDetail]: !this.#film.userDetails[evt.target.dataset.userDetail],
         }
-      });
+      };
+      this.#handleControlButtonClick(updatedFilm, evt.target.dataset.filter);
     }
   };
 

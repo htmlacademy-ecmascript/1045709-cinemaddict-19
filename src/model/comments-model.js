@@ -1,30 +1,34 @@
 import Observable from '../framework/observable.js';
 
 export default class CommentsModel extends Observable {
-  #comments = null;
+  #commentsApiService = null;
 
-  constructor({comments}) {
+  constructor({commentsApiService}) {
     super();
-    this.#comments = comments;
+    this.#commentsApiService = commentsApiService;
   }
 
-  get comments() {
-    return this.#comments;
+  async getFilmComments(filmId) {
+    return await this.#commentsApiService.getFilmComments(filmId);
   }
 
-  addComment(updateType, update) {
-    this.#comments = [...this.comments, update.commentToAdd];
-
-    delete update.commentToAdd;
-
-    this._notify(updateType, update);
+  async addComment(updateType, update) {
+    try {
+      this.#commentsApiService.addComment(update.id, update.commentToAdd);
+      delete update.commentToAdd;
+      this._notify(updateType, update);
+    } catch(err) {
+      throw new Error('Can\'t add comment');
+    }
   }
 
-  deleteComment(updateType, update) {
-    this.#comments = this.#comments.filter((comment) => comment.id !== update.commentToDelete.id);
-
-    delete update.commentToDelete;
-
-    this._notify(updateType, update);
+  async deleteComment(updateType, update) {
+    try {
+      this.#commentsApiService.deleteComment(update.commentToDelete.id);
+      delete update.commentToDelete;
+      this._notify(updateType, update);
+    } catch(err) {
+      throw new Error('Can\'t delete comment');
+    }
   }
 }
