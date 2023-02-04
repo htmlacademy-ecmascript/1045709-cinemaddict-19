@@ -199,64 +199,58 @@ export default class FilmPopupView extends AbstractStatefulView {
     this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#emojiChangeHandler);
   }
 
+  #updateElement(update) {
+    this.updateElement({
+      ...update,
+      scrollPosition: this.element.scrollTop
+    });
+    this.element.scrollTo(0, this._state.scrollPosition);
+  }
+
   #closeClickHandler = () => {
     this.#handleCloseClick();
   };
 
   #controlButtonsClickHandler = (evt) => {
     if (evt.target.classList.contains('film-details__control-button')) {
-      this.updateElement({
+      this.#updateElement({
         userDetails: {
           ...this._state.userDetails,
           [evt.target.dataset.userDetail]: !this._state.userDetails[evt.target.dataset.userDetail],
-        },
-        scrollPosition: this.element.scrollTop
+        }
       });
       this.#handleControlButtonClick(FilmPopupView.parseStateToFilm(this._state));
-      this.element.scrollTo(0, this._state.scrollPosition);
     }
   };
 
   #addCommentKeydownHandler = (evt) => {
     if (isCtrlPlusEnterPressed(evt)) {
       const commentToAdd = {
-        id: Math.random().toString(),
         comment: he.encode(evt.target.value),
         emotion: this._state.commentEmoji
       };
-      this.updateElement({
-        comments: [...this._state.comments, commentToAdd],
-        scrollPosition: this.element.scrollTop
+      const newCommentResponse = this.#handleAddCommentSubmit(this._state.id, commentToAdd);
+      newCommentResponse.then((newComment) => {
+        this.#updateElement({ comments: [...this._state.comments, newComment] });
       });
-      this.#handleAddCommentSubmit({
-        ...FilmPopupView.parseStateToFilm(this._state),
-        commentToAdd
-      });
-      this.element.scrollTo(0, this._state.scrollPosition);
     }
   };
 
   #deleteCommentClickHandler = (evt) => {
     if (evt.target.classList.contains('film-details__comment-delete')) {
       const commentToDelete = this._state.comments.find((comment) => comment.id === evt.target.dataset.id);
-      this.updateElement({
+      this.#updateElement({
         comments: this._state.comments.filter((comment) => comment.id !== evt.target.dataset.id),
-        scrollPosition: this.element.scrollTop
       });
       this.#handleDeleteCommentClick({
         ...FilmPopupView.parseStateToFilm(this._state),
         commentToDelete
       });
-      this.element.scrollTo(0, this._state.scrollPosition);
     }
   };
 
   #emojiChangeHandler = (evt) => {
-    this.updateElement({
-      commentEmoji: evt.target.value,
-      scrollPosition: this.element.scrollTop
-    });
-    this.element.scrollTo(0, this._state.scrollPosition);
+    this.#updateElement({ commentEmoji: evt.target.value });
   };
 
   static parseFilmToState(film) {

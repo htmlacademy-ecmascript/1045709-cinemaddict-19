@@ -68,12 +68,13 @@ export default class FilmPresenter {
     );
   };
 
-  #handleAddComment = (updatedFilm) => {
-    this.#handleUpdateFilmData(
+  #handleAddComment = (filmId, commentToAdd) => {
+    const newCommentResponse = this.#handleUpdateFilmData(
       UserAction.ADD_COMMENT,
       UpdateType.PATCH,
-      updatedFilm
+      { filmId, commentToAdd }
     );
+    return newCommentResponse;
   };
 
   #handleDeleteComment = (updatedFilm) => {
