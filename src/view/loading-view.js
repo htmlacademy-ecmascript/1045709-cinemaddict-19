@@ -1,12 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
-function createNoFilmsTemplate() {
-  return (
-    `<p class="films-list__no-films">
-      Loading...
-    </p>`
-  );
-}
+const createNoFilmsTemplate = () => '<h2 class="films-list__title">Loading...</h2>';
 
 export default class LoadingView extends AbstractView {
   get template() {
