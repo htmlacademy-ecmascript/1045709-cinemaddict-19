@@ -1,4 +1,5 @@
 import { remove, render, RenderPosition } from '../framework/render.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { UpdateType, UserAction, SortType, DateFormat} from '../consts';
 import { humanizeDate } from '../utils.js';
 import FilmSectionView from '../view/film-section-view.js';
@@ -14,6 +15,10 @@ import AwardedFilmsPresenter from './awarded-films-presenter.js';
 
 const DEFAULT_RENDERED_FILMS_QUANTITY = 5;
 const FILMS_TO_RENDER_QUANTITY = 5;
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class FilmListPresenter {
   #filmSectionComponent = new FilmSectionView();
@@ -31,6 +36,10 @@ export default class FilmListPresenter {
   #filtersPresenter = null;
   #currentSortType = SortType.DEFAULT;
   #isLoading = true;
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   constructor({filmsContainer, filmsModel, commentsModel, filterModel}) {
     this.#filmsContainer = filmsContainer;
@@ -183,19 +192,37 @@ export default class FilmListPresenter {
     this.renderFilms(FILMS_TO_RENDER_QUANTITY);
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        this.#filmsModel.updateFilm(updateType, update);
+        try {
+          await this.#filmsModel.updateFilm(updateType, update);
+        } catch (err) {
+          this.#filmPresenter.get(update.id).setAborting(actionType);
+        }
         break;
       case UserAction.ADD_COMMENT:
-        return this.#commentsModel.addComment(updateType, update);
+        try {
+          const newComment = await this.#commentsModel.addComment(updateType, update);
+          this.#uiBlocker.unblock();
+          return newComment;
+        } catch (error) {
+          this.#filmPresenter.get(update.filmId).setAborting(actionType);
+        }
+        break;
       case UserAction.DELETE_COMMENT:
-        this.#commentsModel.deleteComment(updateType, update);
+        try {
+          await this.#commentsModel.deleteComment(updateType, update);
+        } catch (error) {
+          this.#filmPresenter.get(update.id).setAborting(actionType);
+        }
         break;
       default:
         throw new Error(`Unknown action type: ${actionType}`);
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {

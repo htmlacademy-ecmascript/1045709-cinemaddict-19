@@ -53,6 +53,12 @@ export default class FilmPresenter {
     remove(this.#filmComponent);
   }
 
+  setAborting(actionType) {
+    if (this.#popupPresenter.filmPopupComponent) {
+      this.#popupPresenter.filmPopupComponent.errShake(actionType);
+    }
+  }
+
   #handleClick = () => {
     this.#popupPresenter.showPopup();
   };

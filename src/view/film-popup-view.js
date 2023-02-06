@@ -3,9 +3,11 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { humanizeDate, isCtrlPlusEnterPressed } from '../utils.js';
-import { COMMENTS_EMOTIONS, DateFormat } from '../consts.js';
+import { COMMENTS_EMOTIONS, UserAction, DateFormat } from '../consts.js';
 
 const DEFAULT_COMMENT_EMOJI = COMMENTS_EMOTIONS[0];
+const SHAKE_CLASS_NAME = 'shake';
+const SHAKE_ANIMATION_TIMEOUT = 600;
 
 dayjs.extend(relativeTime);
 
@@ -100,7 +102,7 @@ const createCommentsTemplate = (comments) => (`
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${comment.author}</span>
           <span class="film-details__comment-day">${dayjs(comment.date).fromNow()}</span>
-          <button class="film-details__comment-delete" data-id="${comment.id}">Delete</button>
+          <button class="film-details__comment-delete" data-id="${comment.id}">delete</button>
         </p>
       </div>
     </li>
@@ -191,12 +193,35 @@ export default class FilmPopupView extends AbstractStatefulView {
     );
   }
 
+  errShake(actionType) {
+    switch (actionType) {
+      case UserAction.UPDATE_FILM:
+        this.#shakeElement(this.element.querySelector('.film-details__controls'));
+        break;
+      case UserAction.ADD_COMMENT:
+        this.#shakeElement(this.element.querySelector('.film-details__new-comment'));
+        break;
+      case UserAction.DELETE_COMMENT:
+
+        break;
+      default:
+        throw new Error(`Unknown action type: ${actionType}`);
+    }
+  }
+
   _restoreHandlers() {
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeClickHandler);
     this.element.querySelector('.film-details__controls').addEventListener('click', this.#controlButtonsClickHandler);
     this.element.querySelector('.film-details__comments-list').addEventListener('click', this.#deleteCommentClickHandler);
     this.element.querySelector('.film-details__comment-input').addEventListener('keydown', this.#addCommentKeydownHandler);
     this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#emojiChangeHandler);
+  }
+
+  #shakeElement(elementToShake) {
+    elementToShake.classList.add(SHAKE_CLASS_NAME);
+    setTimeout(() => {
+      elementToShake.classList.remove(SHAKE_CLASS_NAME);
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   #updateElement(update) {
@@ -256,7 +281,7 @@ export default class FilmPopupView extends AbstractStatefulView {
   static parseFilmToState(film) {
     return {
       ...film,
-      commentEmoji: DEFAULT_COMMENT_EMOJI
+      commentEmoji: DEFAULT_COMMENT_EMOJI,
     };
   }
 

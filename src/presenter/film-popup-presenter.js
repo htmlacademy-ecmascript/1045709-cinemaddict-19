@@ -4,7 +4,7 @@ import { isEscPressed } from '../utils.js';
 let openedPopup = null;
 
 export default class FilmPopupPresenter {
-  #filmPopupComponent = null;
+  filmPopupComponent = null;
   #film = null;
   #commentsModel = null;
 
@@ -26,7 +26,7 @@ export default class FilmPopupPresenter {
       if (openedPopup) {
         openedPopup.closePopup();
       }
-      this.#filmPopupComponent = new FilmPopupView({
+      this.filmPopupComponent = new FilmPopupView({
         film: {...this.#film, comments},
         onCloseClick: this.#handleCloseClick,
         onControlBtnClick: this.#handleControlButton,
@@ -34,7 +34,7 @@ export default class FilmPopupPresenter {
         onDeleteComment: this.#handleDeleteComment
       });
       document.body.classList.add('hide-overflow');
-      document.body.appendChild(this.#filmPopupComponent.element);
+      document.body.appendChild(this.filmPopupComponent.element);
       document.addEventListener('keydown', this.#closePopupKeydownHandler);
       openedPopup = this;
     });
@@ -42,7 +42,7 @@ export default class FilmPopupPresenter {
 
   closePopup() {
     document.body.classList.remove('hide-overflow');
-    document.body.removeChild(this.#filmPopupComponent.element);
+    document.body.removeChild(this.filmPopupComponent.element);
     document.removeEventListener('keydown', this.#closePopupKeydownHandler);
     openedPopup = null;
   }
