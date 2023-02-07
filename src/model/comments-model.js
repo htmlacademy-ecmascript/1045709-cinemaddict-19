@@ -1,11 +1,14 @@
 import Observable from '../framework/observable.js';
+import { adaptToClient } from '../service/adapter.js';
 
 export default class CommentsModel extends Observable {
   #commentsApiService = null;
+  #filmsModel = null;
 
-  constructor({commentsApiService}) {
+  constructor({commentsApiService, filmsModel}) {
     super();
     this.#commentsApiService = commentsApiService;
+    this.#filmsModel = filmsModel;
   }
 
   async getFilmComments(filmId) {
@@ -14,9 +17,11 @@ export default class CommentsModel extends Observable {
 
   async addComment(updateType, update) {
     try {
-      this.#commentsApiService.addComment(update.id, update.commentToAdd);
-      delete update.commentToAdd;
-      this._notify(updateType, update);
+      const response = await this.#commentsApiService.addComment(update.filmId, update.commentToAdd);
+      const updatedFilm = adaptToClient(response.movie);
+      this.#filmsModel.updateFilmOnClient(updateType, updatedFilm);
+      const newCommentResponse = response.comments[response.comments.length - 1];
+      return newCommentResponse;
     } catch(err) {
       throw new Error('Can\'t add comment');
     }
@@ -26,7 +31,7 @@ export default class CommentsModel extends Observable {
     try {
       this.#commentsApiService.deleteComment(update.commentToDelete.id);
       delete update.commentToDelete;
-      this._notify(updateType, update);
+      this.#filmsModel.updateFilmOnClient(updateType, update);
     } catch(err) {
       throw new Error('Can\'t delete comment');
     }

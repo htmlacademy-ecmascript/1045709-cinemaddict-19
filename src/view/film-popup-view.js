@@ -3,9 +3,11 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { humanizeDate, isCtrlPlusEnterPressed } from '../utils.js';
-import { COMMENTS_EMOTIONS, DateFormat } from '../consts.js';
+import { COMMENTS_EMOTIONS, UserAction, DateFormat } from '../consts.js';
 
 const DEFAULT_COMMENT_EMOJI = COMMENTS_EMOTIONS[0];
+const SHAKE_CLASS_NAME = 'shake';
+const SHAKE_ANIMATION_TIMEOUT = 600;
 
 dayjs.extend(relativeTime);
 
@@ -100,7 +102,7 @@ const createCommentsTemplate = (comments) => (`
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${comment.author}</span>
           <span class="film-details__comment-day">${dayjs(comment.date).fromNow()}</span>
-          <button class="film-details__comment-delete" data-id="${comment.id}">Delete</button>
+          <button class="film-details__comment-delete" data-id="${comment.id}">delete</button>
         </p>
       </div>
     </li>
@@ -191,6 +193,22 @@ export default class FilmPopupView extends AbstractStatefulView {
     );
   }
 
+  errShake(actionType) {
+    switch (actionType) {
+      case UserAction.UPDATE_FILM:
+        this.#shakeElement(this.element.querySelector('.film-details__controls'));
+        break;
+      case UserAction.ADD_COMMENT:
+        this.#shakeElement(this.element.querySelector('.film-details__new-comment'));
+        break;
+      case UserAction.DELETE_COMMENT:
+
+        break;
+      default:
+        throw new Error(`Unknown action type: ${actionType}`);
+    }
+  }
+
   _restoreHandlers() {
     this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#closeClickHandler);
     this.element.querySelector('.film-details__controls').addEventListener('click', this.#controlButtonsClickHandler);
@@ -199,70 +217,71 @@ export default class FilmPopupView extends AbstractStatefulView {
     this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#emojiChangeHandler);
   }
 
+  #shakeElement(elementToShake) {
+    elementToShake.classList.add(SHAKE_CLASS_NAME);
+    setTimeout(() => {
+      elementToShake.classList.remove(SHAKE_CLASS_NAME);
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  #updateElement(update) {
+    this.updateElement({
+      ...update,
+      scrollPosition: this.element.scrollTop
+    });
+    this.element.scrollTo(0, this._state.scrollPosition);
+  }
+
   #closeClickHandler = () => {
     this.#handleCloseClick();
   };
 
   #controlButtonsClickHandler = (evt) => {
     if (evt.target.classList.contains('film-details__control-button')) {
-      this.updateElement({
+      this.#updateElement({
         userDetails: {
           ...this._state.userDetails,
           [evt.target.dataset.userDetail]: !this._state.userDetails[evt.target.dataset.userDetail],
-        },
-        scrollPosition: this.element.scrollTop
+        }
       });
       this.#handleControlButtonClick(FilmPopupView.parseStateToFilm(this._state));
-      this.element.scrollTo(0, this._state.scrollPosition);
     }
   };
 
   #addCommentKeydownHandler = (evt) => {
     if (isCtrlPlusEnterPressed(evt)) {
       const commentToAdd = {
-        id: Math.random().toString(),
         comment: he.encode(evt.target.value),
         emotion: this._state.commentEmoji
       };
-      this.updateElement({
-        comments: [...this._state.comments, commentToAdd],
-        scrollPosition: this.element.scrollTop
+      const newCommentResponse = this.#handleAddCommentSubmit(this._state.id, commentToAdd);
+      newCommentResponse.then((newComment) => {
+        this.#updateElement({ comments: [...this._state.comments, newComment] });
       });
-      this.#handleAddCommentSubmit({
-        ...FilmPopupView.parseStateToFilm(this._state),
-        commentToAdd
-      });
-      this.element.scrollTo(0, this._state.scrollPosition);
     }
   };
 
   #deleteCommentClickHandler = (evt) => {
     if (evt.target.classList.contains('film-details__comment-delete')) {
       const commentToDelete = this._state.comments.find((comment) => comment.id === evt.target.dataset.id);
-      this.updateElement({
+      this.#updateElement({
         comments: this._state.comments.filter((comment) => comment.id !== evt.target.dataset.id),
-        scrollPosition: this.element.scrollTop
       });
       this.#handleDeleteCommentClick({
         ...FilmPopupView.parseStateToFilm(this._state),
         commentToDelete
       });
-      this.element.scrollTo(0, this._state.scrollPosition);
     }
   };
 
   #emojiChangeHandler = (evt) => {
-    this.updateElement({
-      commentEmoji: evt.target.value,
-      scrollPosition: this.element.scrollTop
-    });
-    this.element.scrollTo(0, this._state.scrollPosition);
+    this.#updateElement({ commentEmoji: evt.target.value });
   };
 
   static parseFilmToState(film) {
     return {
       ...film,
-      commentEmoji: DEFAULT_COMMENT_EMOJI
+      commentEmoji: DEFAULT_COMMENT_EMOJI,
     };
   }
 

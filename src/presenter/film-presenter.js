@@ -53,6 +53,12 @@ export default class FilmPresenter {
     remove(this.#filmComponent);
   }
 
+  setAborting(actionType) {
+    if (this.#popupPresenter.filmPopupComponent) {
+      this.#popupPresenter.filmPopupComponent.errShake(actionType);
+    }
+  }
+
   #handleClick = () => {
     this.#popupPresenter.showPopup();
   };
@@ -68,12 +74,13 @@ export default class FilmPresenter {
     );
   };
 
-  #handleAddComment = (updatedFilm) => {
-    this.#handleUpdateFilmData(
+  #handleAddComment = (filmId, commentToAdd) => {
+    const newCommentResponse = this.#handleUpdateFilmData(
       UserAction.ADD_COMMENT,
       UpdateType.PATCH,
-      updatedFilm
+      { filmId, commentToAdd }
     );
+    return newCommentResponse;
   };
 
   #handleDeleteComment = (updatedFilm) => {

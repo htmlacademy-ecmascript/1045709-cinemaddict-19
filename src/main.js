@@ -5,8 +5,8 @@ import FilmsPresenter from './presenter/films-presenter.js';
 import FilterModel from './model/filter-model.js';
 import FilmsModel from './model/films-model.js';
 import CommentsModel from './model/comments-model.js';
-import FilmsApiService from './service/films-api-service.js';
-import CommentsApiService from './service/comments-api-service.js';
+import FilmsApiService from './service/api/films-api-service.js';
+import CommentsApiService from './service/api/comments-api-service.js';
 
 const AUTHORIZATION = 'Basic tKF54Tgh3jd';
 const END_POINT = 'https://19.ecmascript.pages.academy/cinemaddict';
@@ -20,7 +20,8 @@ const filmsModel = new FilmsModel({
 });
 
 const commentsModel = new CommentsModel({
-  commentsApiService: new CommentsApiService(END_POINT, AUTHORIZATION)
+  commentsApiService: new CommentsApiService(END_POINT, AUTHORIZATION),
+  filmsModel
 });
 
 const filterModel = new FilterModel();
