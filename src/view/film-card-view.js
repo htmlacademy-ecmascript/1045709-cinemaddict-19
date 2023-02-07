@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeDate } from '../utils.js';
+import { getTimeFromMins, humanizeDate } from '../utils.js';
 import { FilterType, DateFormat } from '../consts.js';
 
 const DESCRIPTION_TEXT_LIMIT = 140;
@@ -19,7 +19,7 @@ const createFilmCardTemplate = (film) => {
         <p class="film-card__rating">${totalRating}</p>
         <p class="film-card__info">
           <span class="film-card__year">${dateMarkup}</span>
-          <span class="film-card__duration">${duration}</span>
+          <span class="film-card__duration">${getTimeFromMins(duration)}</span>
           <span class="film-card__genre">${genre.join(', ')}</span>
         </p>
         <img src="${poster}" alt="" class="film-card__poster">

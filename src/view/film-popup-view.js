@@ -2,7 +2,7 @@ import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { humanizeDate, isCtrlPlusEnterPressed } from '../utils.js';
+import { getTimeFromMins, humanizeDate, isCtrlPlusEnterPressed } from '../utils.js';
 import { COMMENTS_EMOTIONS, UserAction, DateFormat } from '../consts.js';
 
 const DEFAULT_COMMENT_EMOJI = COMMENTS_EMOTIONS[0];
@@ -50,7 +50,7 @@ const createInfoTemplate = (filmInfo) => {
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Duration</td>
-            <td class="film-details__cell">${duration}</td>
+            <td class="film-details__cell">${getTimeFromMins(duration)}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Country</td>
