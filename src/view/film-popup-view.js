@@ -14,6 +14,7 @@ dayjs.extend(relativeTime);
 const createInfoTemplate = (filmInfo) => {
   const {title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, duration, genre, description} = filmInfo;
   const releaseDateMarkup = humanizeDate(filmInfo.release.date, DateFormat.FILM_POPUP);
+  const releaseCountry = filmInfo.release.releaseCountry;
 
   return (`
       <div class="film-details__poster">
@@ -53,10 +54,10 @@ const createInfoTemplate = (filmInfo) => {
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Country</td>
-            <td class="film-details__cell">USA</td>
+            <td class="film-details__cell">${releaseCountry}</td>
           </tr>
           <tr class="film-details__row">
-            <td class="film-details__term">Genres</td>
+            <td class="film-details__term">${genre.length > 1 ? 'Genres' : 'Genre'}</td>
             <td class="film-details__cell">
               <span class="film-details__genre">${genre.join(', ')}</span>
           </td>
