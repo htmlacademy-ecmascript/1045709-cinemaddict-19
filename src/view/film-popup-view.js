@@ -188,9 +188,7 @@ export default class FilmPopupView extends AbstractStatefulView {
   }
 
   reset(film) {
-    this.updateElement(
-      FilmPopupView.parseFilmToState(film)
-    );
+    this.#updateElement(FilmPopupView.parseFilmToState(film));
   }
 
   errShake(actionType) {
@@ -238,13 +236,11 @@ export default class FilmPopupView extends AbstractStatefulView {
 
   #controlButtonsClickHandler = (evt) => {
     if (evt.target.classList.contains('film-details__control-button')) {
-      this.#updateElement({
-        userDetails: {
-          ...this._state.userDetails,
-          [evt.target.dataset.userDetail]: !this._state.userDetails[evt.target.dataset.userDetail],
-        }
-      });
-      this.#handleControlButtonClick(FilmPopupView.parseStateToFilm(this._state));
+      const updatedUserDetails = {
+        ...this._state.userDetails,
+        [evt.target.dataset.userDetail]: !this._state.userDetails[evt.target.dataset.userDetail],
+      };
+      this.#handleControlButtonClick(updatedUserDetails);
     }
   };
 
@@ -254,19 +250,14 @@ export default class FilmPopupView extends AbstractStatefulView {
         comment: he.encode(evt.target.value),
         emotion: this._state.commentEmoji
       };
-      const newCommentResponse = this.#handleAddCommentSubmit(this._state.id, commentToAdd);
-      newCommentResponse.then((newComment) => {
-        this.#updateElement({ comments: [...this._state.comments, newComment] });
-      });
+      this.#handleAddCommentSubmit(this._state.id, commentToAdd);
     }
   };
 
   #deleteCommentClickHandler = (evt) => {
     if (evt.target.classList.contains('film-details__comment-delete')) {
       const commentToDelete = this._state.comments.find((comment) => comment.id === evt.target.dataset.id);
-      this.#updateElement({
-        comments: this._state.comments.filter((comment) => comment.id !== evt.target.dataset.id),
-      });
+      this._state.comments = this._state.comments.filter((comment) => comment.id !== evt.target.dataset.id);
       this.#handleDeleteCommentClick({
         ...FilmPopupView.parseStateToFilm(this._state),
         commentToDelete

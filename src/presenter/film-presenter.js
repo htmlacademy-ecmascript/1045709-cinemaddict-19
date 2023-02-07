@@ -10,6 +10,7 @@ export default class FilmPresenter {
   #currentFilterType = null;
   #handleUpdateFilmData = null;
 
+  #film = null;
   #filmComponent = null;
 
   #popupPresenter = null;
@@ -22,6 +23,7 @@ export default class FilmPresenter {
   }
 
   init(film) {
+    this.#film = film;
     this.#popupPresenter = new FilmPopupPresenter({
       film,
       commentsModel: this.#commentsModel,
@@ -29,6 +31,12 @@ export default class FilmPresenter {
       handleAddComment: this.#handleAddComment,
       handleDeleteComment: this.#handleDeleteComment
     });
+
+    const openedPopup = this.#popupPresenter.getOpenedPopup();
+
+    if (openedPopup) {
+      this.#popupPresenter.resetPopupComponent(openedPopup.filmPopupComponent, film);
+    }
 
     const prevFilmComponent = this.#filmComponent;
     this.#filmComponent = new FilmCardView({
@@ -63,24 +71,23 @@ export default class FilmPresenter {
     this.#popupPresenter.showPopup();
   };
 
-  #handleControlButton = (updatedFilm, controlFilter) => {
+  #handleControlButton = (updatedUserDetails, controlFilter) => {
     if (controlFilter === this.#currentFilterType) {
       this.destroy();
     }
     this.#handleUpdateFilmData(
       UserAction.UPDATE_FILM,
       UpdateType.PATCH,
-      updatedFilm
+      {...this.#film, userDetails: updatedUserDetails}
     );
   };
 
   #handleAddComment = (filmId, commentToAdd) => {
-    const newCommentResponse = this.#handleUpdateFilmData(
+    this.#handleUpdateFilmData(
       UserAction.ADD_COMMENT,
       UpdateType.PATCH,
       { filmId, commentToAdd }
     );
-    return newCommentResponse;
   };
 
   #handleDeleteComment = (updatedFilm) => {
