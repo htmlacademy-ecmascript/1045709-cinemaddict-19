@@ -20,8 +20,6 @@ export default class CommentsModel extends Observable {
       const response = await this.#commentsApiService.addComment(update.filmId, update.commentToAdd);
       const updatedFilm = adaptToClient(response.movie);
       this.#filmsModel.updateFilmOnClient(updateType, updatedFilm);
-      const newCommentResponse = response.comments[response.comments.length - 1];
-      return newCommentResponse;
     } catch(err) {
       throw new Error('Can\'t add comment');
     }
@@ -29,7 +27,7 @@ export default class CommentsModel extends Observable {
 
   async deleteComment(updateType, update) {
     try {
-      this.#commentsApiService.deleteComment(update.commentToDelete.id);
+      await this.#commentsApiService.deleteComment(update.commentToDelete.id);
       delete update.commentToDelete;
       this.#filmsModel.updateFilmOnClient(updateType, update);
     } catch(err) {

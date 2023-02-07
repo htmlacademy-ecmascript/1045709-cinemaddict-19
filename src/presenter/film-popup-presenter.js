@@ -47,6 +47,16 @@ export default class FilmPopupPresenter {
     openedPopup = null;
   }
 
+  getOpenedPopup() {
+    return openedPopup;
+  }
+
+  resetPopupComponent(popupComponent, film) {
+    this.#commentsModel.getFilmComments(this.#film.id).then((comments) => {
+      popupComponent.reset({...film, comments});
+    });
+  }
+
   #handleCloseClick = () => {
     this.closePopup();
   };

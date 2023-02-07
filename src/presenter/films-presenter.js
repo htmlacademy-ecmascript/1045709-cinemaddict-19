@@ -204,9 +204,7 @@ export default class FilmListPresenter {
         break;
       case UserAction.ADD_COMMENT:
         try {
-          const newComment = await this.#commentsModel.addComment(updateType, update);
-          this.#uiBlocker.unblock();
-          return newComment;
+          await this.#commentsModel.addComment(updateType, update);
         } catch (error) {
           this.#filmPresenter.get(update.filmId).setAborting(actionType);
         }

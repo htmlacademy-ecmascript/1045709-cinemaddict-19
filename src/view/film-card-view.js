@@ -73,14 +73,11 @@ export default class FilmCardView extends AbstractView {
 
   #controlButtonsClickHandler = (evt) => {
     if (evt.target.classList.contains('film-card__controls-item')) {
-      const updatedFilm = {
-        ...this.#film,
-        userDetails: {
-          ...this.#film.userDetails,
-          [evt.target.dataset.userDetail]: !this.#film.userDetails[evt.target.dataset.userDetail],
-        }
+      const updatedUserDetails = {
+        ...this.#film.userDetails,
+        [evt.target.dataset.userDetail]: !this.#film.userDetails[evt.target.dataset.userDetail],
       };
-      this.#handleControlButtonClick(updatedFilm, evt.target.dataset.filter);
+      this.#handleControlButtonClick(updatedUserDetails, evt.target.dataset.filter);
     }
   };
 
