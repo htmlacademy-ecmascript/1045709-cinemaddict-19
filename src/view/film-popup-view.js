@@ -58,9 +58,7 @@ const createInfoTemplate = (filmInfo) => {
           <tr class="film-details__row">
             <td class="film-details__term">Genres</td>
             <td class="film-details__cell">
-              <span class="film-details__genre">${genre}</span>
-              <span class="film-details__genre">Film-Noir</span>
-              <span class="film-details__genre">Mystery</span>
+              <span class="film-details__genre">${genre.join(', ')}</span>
           </td>
           </tr>
         </table>
