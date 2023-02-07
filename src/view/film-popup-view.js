@@ -3,11 +3,9 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { getTimeFromMins, humanizeDate, isCtrlPlusEnterPressed } from '../utils.js';
-import { COMMENTS_EMOTIONS, UserAction, DateFormat } from '../consts.js';
+import { COMMENTS_EMOTIONS, UserAction, DateFormat, SHAKE_CLASS_NAME, SHAKE_ANIMATION_TIMEOUT } from '../consts.js';
 
 const DEFAULT_COMMENT_EMOJI = COMMENTS_EMOTIONS[0];
-const SHAKE_CLASS_NAME = 'shake';
-const SHAKE_ANIMATION_TIMEOUT = 600;
 
 dayjs.extend(relativeTime);
 
