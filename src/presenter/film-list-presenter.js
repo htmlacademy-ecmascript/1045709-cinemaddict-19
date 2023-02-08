@@ -10,7 +10,7 @@ import LoadingView from '../view/loading-view.js';
 import SortView from '../view/sort-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
 import QuantityStatisticsView from '../view/quantity-statistics-view.js';
-import FiltersPresenter from './films-filters-presenter.js';
+import FiltersPresenter from './filters-presenter.js';
 import FilmPresenter from './film-presenter.js';
 import AwardedFilmsPresenter from './awarded-films-presenter.js';
 
