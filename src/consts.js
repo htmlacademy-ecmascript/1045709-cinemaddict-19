@@ -36,4 +36,7 @@ const DateFormat = {
   FILM_POPUP: 'D MMM YYYY'
 };
 
-export { COMMENTS_EMOTIONS, UserAction, UpdateType, SortType, FilterType, DateFormat };
+const SHAKE_CLASS_NAME = 'shake';
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
+export { COMMENTS_EMOTIONS, UserAction, UpdateType, SortType, FilterType, DateFormat, SHAKE_CLASS_NAME, SHAKE_ANIMATION_TIMEOUT };

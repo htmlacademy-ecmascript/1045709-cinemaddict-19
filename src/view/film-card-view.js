@@ -1,6 +1,8 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeDate } from '../utils.js';
+import { getTimeFromMins, humanizeDate } from '../utils.js';
 import { FilterType, DateFormat } from '../consts.js';
+
+const DESCRIPTION_TEXT_LIMIT = 140;
 
 const createFilmCardTemplate = (film) => {
   const {comments} = film;
@@ -17,11 +19,13 @@ const createFilmCardTemplate = (film) => {
         <p class="film-card__rating">${totalRating}</p>
         <p class="film-card__info">
           <span class="film-card__year">${dateMarkup}</span>
-          <span class="film-card__duration">${duration}</span>
-          <span class="film-card__genre">${genre}</span>
+          <span class="film-card__duration">${getTimeFromMins(duration)}</span>
+          <span class="film-card__genre">${genre.join(', ')}</span>
         </p>
         <img src="${poster}" alt="" class="film-card__poster">
-        <p class="film-card__description">${description}</p>
+        <p class="film-card__description">
+          ${description.length < DESCRIPTION_TEXT_LIMIT ? description : `${description.slice(0, DESCRIPTION_TEXT_LIMIT)}...`}
+        </p>
         <span class="film-card__comments">${comments.length} comments</span>
       </a>
       <div class="film-card__controls">
@@ -73,14 +77,11 @@ export default class FilmCardView extends AbstractView {
 
   #controlButtonsClickHandler = (evt) => {
     if (evt.target.classList.contains('film-card__controls-item')) {
-      const updatedFilm = {
-        ...this.#film,
-        userDetails: {
-          ...this.#film.userDetails,
-          [evt.target.dataset.userDetail]: !this.#film.userDetails[evt.target.dataset.userDetail],
-        }
+      const updatedUserDetails = {
+        ...this.#film.userDetails,
+        [evt.target.dataset.userDetail]: !this.#film.userDetails[evt.target.dataset.userDetail],
       };
-      this.#handleControlButtonClick(updatedFilm, evt.target.dataset.filter);
+      this.#handleControlButtonClick(updatedUserDetails, evt.target.dataset.filter);
     }
   };
 

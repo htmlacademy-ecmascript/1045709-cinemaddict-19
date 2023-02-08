@@ -2,18 +2,17 @@ import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { humanizeDate, isCtrlPlusEnterPressed } from '../utils.js';
-import { COMMENTS_EMOTIONS, UserAction, DateFormat } from '../consts.js';
+import { getTimeFromMins, humanizeDate, isCtrlPlusEnterPressed } from '../utils.js';
+import { COMMENTS_EMOTIONS, UserAction, DateFormat, SHAKE_CLASS_NAME, SHAKE_ANIMATION_TIMEOUT } from '../consts.js';
 
 const DEFAULT_COMMENT_EMOJI = COMMENTS_EMOTIONS[0];
-const SHAKE_CLASS_NAME = 'shake';
-const SHAKE_ANIMATION_TIMEOUT = 600;
 
 dayjs.extend(relativeTime);
 
 const createInfoTemplate = (filmInfo) => {
   const {title, alternativeTitle, totalRating, poster, ageRating, director, writers, actors, duration, genre, description} = filmInfo;
   const releaseDateMarkup = humanizeDate(filmInfo.release.date, DateFormat.FILM_POPUP);
+  const releaseCountry = filmInfo.release.releaseCountry;
 
   return (`
       <div class="film-details__poster">
@@ -49,18 +48,16 @@ const createInfoTemplate = (filmInfo) => {
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Duration</td>
-            <td class="film-details__cell">${duration}</td>
+            <td class="film-details__cell">${getTimeFromMins(duration)}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Country</td>
-            <td class="film-details__cell">USA</td>
+            <td class="film-details__cell">${releaseCountry}</td>
           </tr>
           <tr class="film-details__row">
-            <td class="film-details__term">Genres</td>
+            <td class="film-details__term">${genre.length > 1 ? 'Genres' : 'Genre'}</td>
             <td class="film-details__cell">
-              <span class="film-details__genre">${genre}</span>
-              <span class="film-details__genre">Film-Noir</span>
-              <span class="film-details__genre">Mystery</span>
+              <span class="film-details__genre">${genre.join(', ')}</span>
           </td>
           </tr>
         </table>
@@ -188,9 +185,7 @@ export default class FilmPopupView extends AbstractStatefulView {
   }
 
   reset(film) {
-    this.updateElement(
-      FilmPopupView.parseFilmToState(film)
-    );
+    this.#updateElement(FilmPopupView.parseFilmToState(film));
   }
 
   errShake(actionType) {
@@ -202,7 +197,8 @@ export default class FilmPopupView extends AbstractStatefulView {
         this.#shakeElement(this.element.querySelector('.film-details__new-comment'));
         break;
       case UserAction.DELETE_COMMENT:
-
+        this.#shakeElement(this.element.querySelector('.deleting-comment'));
+        this.element.querySelector('.deleting-comment').classList.remove('deleting-comment');
         break;
       default:
         throw new Error(`Unknown action type: ${actionType}`);
@@ -238,13 +234,11 @@ export default class FilmPopupView extends AbstractStatefulView {
 
   #controlButtonsClickHandler = (evt) => {
     if (evt.target.classList.contains('film-details__control-button')) {
-      this.#updateElement({
-        userDetails: {
-          ...this._state.userDetails,
-          [evt.target.dataset.userDetail]: !this._state.userDetails[evt.target.dataset.userDetail],
-        }
-      });
-      this.#handleControlButtonClick(FilmPopupView.parseStateToFilm(this._state));
+      const updatedUserDetails = {
+        ...this._state.userDetails,
+        [evt.target.dataset.userDetail]: !this._state.userDetails[evt.target.dataset.userDetail],
+      };
+      this.#handleControlButtonClick(updatedUserDetails);
     }
   };
 
@@ -254,19 +248,15 @@ export default class FilmPopupView extends AbstractStatefulView {
         comment: he.encode(evt.target.value),
         emotion: this._state.commentEmoji
       };
-      const newCommentResponse = this.#handleAddCommentSubmit(this._state.id, commentToAdd);
-      newCommentResponse.then((newComment) => {
-        this.#updateElement({ comments: [...this._state.comments, newComment] });
-      });
+      this.#handleAddCommentSubmit(this._state.id, commentToAdd);
     }
   };
 
   #deleteCommentClickHandler = (evt) => {
     if (evt.target.classList.contains('film-details__comment-delete')) {
       const commentToDelete = this._state.comments.find((comment) => comment.id === evt.target.dataset.id);
-      this.#updateElement({
-        comments: this._state.comments.filter((comment) => comment.id !== evt.target.dataset.id),
-      });
+      this._state.comments = this._state.comments.filter((comment) => comment.id !== evt.target.dataset.id);
+      evt.target.closest('.film-details__comment').classList.add('deleting-comment');
       this.#handleDeleteCommentClick({
         ...FilmPopupView.parseStateToFilm(this._state),
         commentToDelete

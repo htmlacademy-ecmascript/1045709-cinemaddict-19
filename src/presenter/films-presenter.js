@@ -5,10 +5,11 @@ import { humanizeDate } from '../utils.js';
 import FilmSectionView from '../view/film-section-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
-//import EmptyFilmListView from '../view/empty-film-list-view.js';
+import EmptyFilmListView from '../view/empty-film-list-view.js';
 import LoadingView from '../view/loading-view.js';
 import SortView from '../view/sort-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
+import QuantityStatisticsView from '../view/quantity-statistics-view.js';
 import FiltersPresenter from './films-filters-presenter.js';
 import FilmPresenter from './film-presenter.js';
 import AwardedFilmsPresenter from './awarded-films-presenter.js';
@@ -20,13 +21,17 @@ const TimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
+const userRankContainer = document.querySelector('.header');
+const quantityStatisticsContainer = document.querySelector('.footer__statistics');
+
 export default class FilmListPresenter {
   #filmSectionComponent = new FilmSectionView();
   #filmListComponent = new FilmListView();
   #filmListContainerComponent = new FilmListContainerView();
   #loadingComponent = new LoadingView();
   #sortComponent = null;
-  #filmShowMoreBtnComponent = null;
+  #showMoreBtnComponent = null;
+  #emptyListComponent = null;
   #filmsContainer = null;
   #filmsModel = null;
   #commentsModel = null;
@@ -35,7 +40,6 @@ export default class FilmListPresenter {
   #filmPresenter = new Map();
   #filtersPresenter = null;
   #currentSortType = SortType.DEFAULT;
-  #isLoading = true;
   #uiBlocker = new UiBlocker({
     lowerLimit: TimeLimit.LOWER_LIMIT,
     upperLimit: TimeLimit.UPPER_LIMIT
@@ -72,15 +76,9 @@ export default class FilmListPresenter {
 
   init() {
     this.#renderFilters();
-    // if (this.films.length === 0) {
-    //   this.#renderFilmsContainers();
-    //   this.#renderEmptyFilmList();
-    //   return;
-    // }
     this.#renderSort();
     this.#renderFilmsContainers();
-    this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
-    this.#renderShowMoreBtn();
+    this.#renderLoading();
     this.#renderAwardSection();
   }
 
@@ -88,9 +86,12 @@ export default class FilmListPresenter {
     this.#filmPresenter.forEach((presenter) => presenter.destroy());
     this.#filmPresenter.clear();
 
-    remove(this.#filmShowMoreBtnComponent);
+    this.#sortComponent.element.style.display = 'flex';
+
+    remove(this.#showMoreBtnComponent);
     this.#renderShowMoreBtn();
 
+    remove(this.#emptyListComponent);
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
       this.#setActiveSortButton(this.#sortComponent.element.querySelector('.sort__button[data-sort-type="default"]'));
@@ -98,17 +99,17 @@ export default class FilmListPresenter {
   }
 
   renderFilms(toRenderQuantity) {
-    if (this.#isLoading) {
-      this.#renderLoading();
-      return;
-    }
     const filmsToRender = this.films;
     const renderedFilmsQuantity = this.#filmListContainerComponent.element.children.length;
+    if (filmsToRender.length === 0) {
+      this.#renderEmptyFilmList();
+      return;
+    }
     for (let i = renderedFilmsQuantity; i < renderedFilmsQuantity + toRenderQuantity; i++) {
       this.#renderFilm(filmsToRender[i]);
       const isLastFilm = filmsToRender[i] === filmsToRender[filmsToRender.length - 1];
       if (isLastFilm) {
-        remove(this.#filmShowMoreBtnComponent);
+        remove(this.#showMoreBtnComponent);
         return;
       }
     }
@@ -128,6 +129,7 @@ export default class FilmListPresenter {
   #renderFilters() {
     this.#filtersPresenter = new FiltersPresenter({
       filtersContainer: this.#filmsContainer,
+      userRankContainer: userRankContainer,
       filterModel: this.#filterModel,
       filmsModel: this.#filmsModel
     });
@@ -154,18 +156,21 @@ export default class FilmListPresenter {
     render(this.#filmListContainerComponent, this.#filmListComponent.element);
   }
 
-  // #renderEmptyFilmList() {
-  //   render(new EmptyFilmListView({
-  //     filters: this.#filtersPresenter.filters,
-  //     activeFilter: this.#filterModel.filter
-  //   }), this.#filmSectionComponent.element);
-  // }
+  #renderEmptyFilmList() {
+    this.#sortComponent.element.style.display = 'none';
+    remove(this.#showMoreBtnComponent);
+    this.#emptyListComponent = new EmptyFilmListView({
+      filters: this.#filtersPresenter.filters,
+      activeFilter: this.#filterModel.filter
+    });
+    render(this.#emptyListComponent, this.#filmListComponent.element);
+  }
 
   #renderShowMoreBtn() {
-    this.#filmShowMoreBtnComponent = new ShowMoreBtnView({
+    this.#showMoreBtnComponent = new ShowMoreBtnView({
       onClick: this.#handleLoadMoreButtonClick
     });
-    render(this.#filmShowMoreBtnComponent, this.#filmListComponent.element);
+    render(this.#showMoreBtnComponent, this.#filmListComponent.element);
   }
 
   #renderAwardSection() {
@@ -174,6 +179,12 @@ export default class FilmListPresenter {
       films: this.films
     });
     awardedFilmsPresenter.init();
+  }
+
+  #renderQuantityStatistics() {
+    render(new QuantityStatisticsView({
+      filmsQuantity: this.#filmsModel.films.length
+    }), quantityStatisticsContainer);
   }
 
   #setActiveSortButton(button) {
@@ -198,15 +209,16 @@ export default class FilmListPresenter {
       case UserAction.UPDATE_FILM:
         try {
           await this.#filmsModel.updateFilm(updateType, update);
+          if (this.films.length === 0) {
+            this.#renderEmptyFilmList();
+          }
         } catch (err) {
           this.#filmPresenter.get(update.id).setAborting(actionType);
         }
         break;
       case UserAction.ADD_COMMENT:
         try {
-          const newComment = await this.#commentsModel.addComment(updateType, update);
-          this.#uiBlocker.unblock();
-          return newComment;
+          await this.#commentsModel.addComment(updateType, update);
         } catch (error) {
           this.#filmPresenter.get(update.filmId).setAborting(actionType);
         }
@@ -239,9 +251,14 @@ export default class FilmListPresenter {
         this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
         break;
       case UpdateType.INIT:
-        this.#isLoading = false;
         remove(this.#loadingComponent);
+        this.#renderQuantityStatistics();
+        if (this.films.length === 0) {
+          this.#renderEmptyFilmList();
+          return;
+        }
         this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
+        this.#renderShowMoreBtn();
         break;
       default:
         throw new Error(`Unknown update type: ${updateType}`);
