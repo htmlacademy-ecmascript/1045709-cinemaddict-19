@@ -28,6 +28,7 @@ export default class FilmListPresenter {
   #sortComponent = null;
   #filmShowMoreBtnComponent = null;
   #filmsContainer = null;
+  #userRankContainer = null;
   #filmsModel = null;
   #commentsModel = null;
   #filterModel = null;
@@ -41,8 +42,9 @@ export default class FilmListPresenter {
     upperLimit: TimeLimit.UPPER_LIMIT
   });
 
-  constructor({filmsContainer, filmsModel, commentsModel, filterModel}) {
+  constructor({filmsContainer, userRankContainer, filmsModel, commentsModel, filterModel}) {
     this.#filmsContainer = filmsContainer;
+    this.#userRankContainer = userRankContainer;
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
     this.#filterModel = filterModel;
@@ -128,6 +130,7 @@ export default class FilmListPresenter {
   #renderFilters() {
     this.#filtersPresenter = new FiltersPresenter({
       filtersContainer: this.#filmsContainer,
+      userRankContainer: this.#userRankContainer,
       filterModel: this.#filterModel,
       filmsModel: this.#filmsModel
     });

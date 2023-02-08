@@ -1,4 +1,3 @@
-import UserRankView from './view/user-rank-view.js';
 import QuantityStatisticsView from './view/quantity-statistics-view.js';
 import { render } from './framework/render.js';
 import FilmsPresenter from './presenter/films-presenter.js';
@@ -29,13 +28,12 @@ const filterModel = new FilterModel();
 const filmsQuantity = filmsModel.films.length.toLocaleString();
 const filmsPresenter = new FilmsPresenter({
   filmsContainer: siteMain,
+  userRankContainer: siteHeader,
   filmsModel,
   commentsModel,
   filterModel
 });
 
-
-render(new UserRankView(), siteHeader);
 render(new QuantityStatisticsView({filmsQuantity}), siteFooter);
 
 filmsPresenter.init();
