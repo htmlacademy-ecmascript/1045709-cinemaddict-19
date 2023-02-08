@@ -1,16 +1,20 @@
 import { remove, render, replace } from '../framework/render.js';
+import UserRankView from '../view/user-rank-view.js';
 import FiltersView from '../view/filters-view.js';
 import { UpdateType, FilterType } from '../consts.js';
 
 export default class FiltersPresenter {
+  #userRankContainer = null;
   #filtersContainer = null;
   #filterModel = null;
   #filmsModel = null;
 
+  #userRankComponent = null;
   #filterComponent = null;
 
-  constructor({filtersContainer, filterModel, filmsModel}) {
+  constructor({filtersContainer, userRankContainer, filterModel, filmsModel}) {
     this.#filtersContainer = filtersContainer;
+    this.#userRankContainer = userRankContainer;
     this.#filterModel = filterModel;
     this.#filmsModel = filmsModel;
 
@@ -65,7 +69,12 @@ export default class FiltersPresenter {
 
   init() {
     const filters = this.filters;
+    const prevUserRankComponent = this.#userRankComponent;
     const prevFilterComponent = this.#filterComponent;
+
+    const watchedFilmsQuantity = filters.history.filteredFilms.length;
+
+    this.#userRankComponent = new UserRankView({ watchedFilmsQuantity });
 
     this.#filterComponent = new FiltersView({
       filters,
@@ -73,13 +82,24 @@ export default class FiltersPresenter {
       onFilterTypeChange: this.#handleFilterTypeChange
     });
 
-    if (prevFilterComponent === null) {
-      render(this.#filterComponent, this.#filtersContainer);
-      return;
+    if (prevUserRankComponent === null) {
+      render(this.#userRankComponent, this.#userRankContainer);
+    } else {
+      replace(this.#userRankComponent, prevUserRankComponent);
+      remove(prevUserRankComponent);
     }
 
-    replace(this.#filterComponent, prevFilterComponent);
-    remove(prevFilterComponent);
+    if (prevFilterComponent === null) {
+      render(this.#filterComponent, this.#filtersContainer);
+    } else {
+      replace(this.#filterComponent, prevFilterComponent);
+      remove(prevFilterComponent);
+    }
+
+    if (watchedFilmsQuantity === 0) {
+      remove(this.#userRankComponent);
+      this.#userRankComponent = null;
+    }
 
   }
 
