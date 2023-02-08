@@ -197,7 +197,8 @@ export default class FilmPopupView extends AbstractStatefulView {
         this.#shakeElement(this.element.querySelector('.film-details__new-comment'));
         break;
       case UserAction.DELETE_COMMENT:
-
+        this.#shakeElement(this.element.querySelector('.deleting-comment'));
+        this.element.querySelector('.deleting-comment').classList.remove('deleting-comment');
         break;
       default:
         throw new Error(`Unknown action type: ${actionType}`);
@@ -255,6 +256,7 @@ export default class FilmPopupView extends AbstractStatefulView {
     if (evt.target.classList.contains('film-details__comment-delete')) {
       const commentToDelete = this._state.comments.find((comment) => comment.id === evt.target.dataset.id);
       this._state.comments = this._state.comments.filter((comment) => comment.id !== evt.target.dataset.id);
+      evt.target.closest('.film-details__comment').classList.add('deleting-comment');
       this.#handleDeleteCommentClick({
         ...FilmPopupView.parseStateToFilm(this._state),
         commentToDelete
