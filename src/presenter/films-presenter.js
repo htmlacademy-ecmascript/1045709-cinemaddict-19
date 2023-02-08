@@ -9,6 +9,7 @@ import FilmListView from '../view/film-list-view.js';
 import LoadingView from '../view/loading-view.js';
 import SortView from '../view/sort-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
+import QuantityStatisticsView from '../view/quantity-statistics-view.js';
 import FiltersPresenter from './films-filters-presenter.js';
 import FilmPresenter from './film-presenter.js';
 import AwardedFilmsPresenter from './awarded-films-presenter.js';
@@ -20,6 +21,9 @@ const TimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
+const userRankContainer = document.querySelector('.header');
+const quantityStatisticsContainer = document.querySelector('.footer__statistics');
+
 export default class FilmListPresenter {
   #filmSectionComponent = new FilmSectionView();
   #filmListComponent = new FilmListView();
@@ -28,7 +32,6 @@ export default class FilmListPresenter {
   #sortComponent = null;
   #filmShowMoreBtnComponent = null;
   #filmsContainer = null;
-  #userRankContainer = null;
   #filmsModel = null;
   #commentsModel = null;
   #filterModel = null;
@@ -42,9 +45,8 @@ export default class FilmListPresenter {
     upperLimit: TimeLimit.UPPER_LIMIT
   });
 
-  constructor({filmsContainer, userRankContainer, filmsModel, commentsModel, filterModel}) {
+  constructor({filmsContainer, filmsModel, commentsModel, filterModel}) {
     this.#filmsContainer = filmsContainer;
-    this.#userRankContainer = userRankContainer;
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
     this.#filterModel = filterModel;
@@ -130,7 +132,7 @@ export default class FilmListPresenter {
   #renderFilters() {
     this.#filtersPresenter = new FiltersPresenter({
       filtersContainer: this.#filmsContainer,
-      userRankContainer: this.#userRankContainer,
+      userRankContainer: userRankContainer,
       filterModel: this.#filterModel,
       filmsModel: this.#filmsModel
     });
@@ -177,6 +179,12 @@ export default class FilmListPresenter {
       films: this.films
     });
     awardedFilmsPresenter.init();
+  }
+
+  #renderQuantityStatistics() {
+    render(new QuantityStatisticsView({
+      filmsQuantity: this.#filmsModel.films.length
+    }), quantityStatisticsContainer);
   }
 
   #setActiveSortButton(button) {
@@ -243,6 +251,7 @@ export default class FilmListPresenter {
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
+        this.#renderQuantityStatistics();
         break;
       default:
         throw new Error(`Unknown update type: ${updateType}`);
