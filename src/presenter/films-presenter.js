@@ -30,7 +30,7 @@ export default class FilmListPresenter {
   #filmListContainerComponent = new FilmListContainerView();
   #loadingComponent = new LoadingView();
   #sortComponent = null;
-  #filmShowMoreBtnComponent = null;
+  #showMoreBtnComponent = null;
   #emptyListComponent = null;
   #filmsContainer = null;
   #filmsModel = null;
@@ -88,7 +88,7 @@ export default class FilmListPresenter {
 
     this.#sortComponent.element.style.display = 'flex';
 
-    remove(this.#filmShowMoreBtnComponent);
+    remove(this.#showMoreBtnComponent);
     this.#renderShowMoreBtn();
 
     remove(this.#emptyListComponent);
@@ -109,7 +109,7 @@ export default class FilmListPresenter {
       this.#renderFilm(filmsToRender[i]);
       const isLastFilm = filmsToRender[i] === filmsToRender[filmsToRender.length - 1];
       if (isLastFilm) {
-        remove(this.#filmShowMoreBtnComponent);
+        remove(this.#showMoreBtnComponent);
         return;
       }
     }
@@ -158,7 +158,7 @@ export default class FilmListPresenter {
 
   #renderEmptyFilmList() {
     this.#sortComponent.element.style.display = 'none';
-    remove(this.#filmShowMoreBtnComponent);
+    remove(this.#showMoreBtnComponent);
     this.#emptyListComponent = new EmptyFilmListView({
       filters: this.#filtersPresenter.filters,
       activeFilter: this.#filterModel.filter
@@ -167,10 +167,10 @@ export default class FilmListPresenter {
   }
 
   #renderShowMoreBtn() {
-    this.#filmShowMoreBtnComponent = new ShowMoreBtnView({
+    this.#showMoreBtnComponent = new ShowMoreBtnView({
       onClick: this.#handleLoadMoreButtonClick
     });
-    render(this.#filmShowMoreBtnComponent, this.#filmListComponent.element);
+    render(this.#showMoreBtnComponent, this.#filmListComponent.element);
   }
 
   #renderAwardSection() {
