@@ -1,7 +1,7 @@
 import { remove, render, RenderPosition } from '../framework/render.js';
-import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { UpdateType, UserAction, SortType, DateFormat} from '../consts';
 import { humanizeDate } from '../utils.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import FilmSectionView from '../view/film-section-view.js';
 import FilmListContainerView from '../view/film-list-container-view.js';
 import FilmListView from '../view/film-list-view.js';
@@ -10,9 +10,9 @@ import LoadingView from '../view/loading-view.js';
 import SortView from '../view/sort-view.js';
 import ShowMoreBtnView from '../view/show-more-btn-view.js';
 import QuantityStatisticsView from '../view/quantity-statistics-view.js';
-import FiltersPresenter from './films-filters-presenter.js';
+import FiltersPresenter from './filters-presenter.js';
 import FilmPresenter from './film-presenter.js';
-import AwardedFilmsPresenter from './awarded-films-presenter.js';
+import AwardedFilmListPresenter from './awarded-film-list-presenter.js';
 
 const DEFAULT_RENDERED_FILMS_QUANTITY = 5;
 const FILMS_TO_RENDER_QUANTITY = 5;
@@ -37,8 +37,9 @@ export default class FilmListPresenter {
   #commentsModel = null;
   #filterModel = null;
 
-  #filmPresenter = new Map();
+  #filmPresenters = new Map();
   #filtersPresenter = null;
+  #awardedFilmListPresenter = null;
   #currentSortType = SortType.DEFAULT;
   #uiBlocker = new UiBlocker({
     lowerLimit: TimeLimit.LOWER_LIMIT,
@@ -79,12 +80,11 @@ export default class FilmListPresenter {
     this.#renderSort();
     this.#renderFilmsContainers();
     this.#renderLoading();
-    this.#renderAwardSection();
   }
 
   clearFilmList({resetSortType = false} = {}) {
-    this.#filmPresenter.forEach((presenter) => presenter.destroy());
-    this.#filmPresenter.clear();
+    this.#filmPresenters.forEach((presenter) => presenter.destroy());
+    this.#filmPresenters.clear();
 
     this.#sortComponent.element.style.display = 'flex';
 
@@ -98,7 +98,7 @@ export default class FilmListPresenter {
     }
   }
 
-  renderFilms(toRenderQuantity) {
+  #renderFilms(toRenderQuantity) {
     const filmsToRender = this.films;
     const renderedFilmsQuantity = this.#filmListContainerComponent.element.children.length;
     if (filmsToRender.length === 0) {
@@ -123,7 +123,7 @@ export default class FilmListPresenter {
       onDataChange: this.#handleViewAction
     });
     filmPresenter.init(film);
-    this.#filmPresenter.set(film.id, filmPresenter);
+    this.#filmPresenters.set(film.id, filmPresenter);
   }
 
   #renderFilters() {
@@ -173,12 +173,16 @@ export default class FilmListPresenter {
     render(this.#showMoreBtnComponent, this.#filmListComponent.element);
   }
 
-  #renderAwardSection() {
-    const awardedFilmsPresenter = new AwardedFilmsPresenter({
+  #renderAwardedFilms() {
+    this.#awardedFilmListPresenter = new AwardedFilmListPresenter({
       awardedFilmsContainer: this.#filmSectionComponent.element,
-      films: this.films
+      filmsModel: this.#filmsModel,
+      commentsModel: this.#commentsModel,
+      filterModel: this.#filterModel,
+      onDataChange: this.#handleViewAction
     });
-    awardedFilmsPresenter.init();
+
+    this.#awardedFilmListPresenter.init();
   }
 
   #renderQuantityStatistics() {
@@ -196,11 +200,11 @@ export default class FilmListPresenter {
     this.clearFilmList();
     this.#currentSortType = sortType;
     this.#setActiveSortButton(button);
-    this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
+    this.#renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
   };
 
   #handleLoadMoreButtonClick = () => {
-    this.renderFilms(FILMS_TO_RENDER_QUANTITY);
+    this.#renderFilms(FILMS_TO_RENDER_QUANTITY);
   };
 
   #handleViewAction = async (actionType, updateType, update) => {
@@ -213,21 +217,24 @@ export default class FilmListPresenter {
             this.#renderEmptyFilmList();
           }
         } catch (err) {
-          this.#filmPresenter.get(update.id).setAborting(actionType);
+          this.#filmPresenters.get(update.id)?.setAborting(actionType);
+          this.#awardedFilmListPresenter.filmPresenters.get(update.id)?.setAborting(actionType);
         }
         break;
       case UserAction.ADD_COMMENT:
         try {
           await this.#commentsModel.addComment(updateType, update);
         } catch (error) {
-          this.#filmPresenter.get(update.filmId).setAborting(actionType);
+          this.#filmPresenters.get(update.filmId)?.setAborting(actionType);
+          this.#awardedFilmListPresenter.filmPresenters.get(update.filmId)?.setAborting(actionType);
         }
         break;
       case UserAction.DELETE_COMMENT:
         try {
           await this.#commentsModel.deleteComment(updateType, update);
         } catch (error) {
-          this.#filmPresenter.get(update.id).setAborting(actionType);
+          this.#filmPresenters.get(update.id)?.setAborting(actionType);
+          this.#awardedFilmListPresenter.filmPresenters.get(update.id)?.setAborting(actionType);
         }
         break;
       default:
@@ -240,15 +247,15 @@ export default class FilmListPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#filmPresenter.get(data.id).init(data);
+        this.#filmPresenters.get(data.id)?.init(data);
         break;
       case UpdateType.MINOR:
         this.clearFilmList();
-        this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
+        this.#renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
         break;
       case UpdateType.MAJOR:
         this.clearFilmList({resetSortType: true});
-        this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
+        this.#renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
         break;
       case UpdateType.INIT:
         remove(this.#loadingComponent);
@@ -257,8 +264,9 @@ export default class FilmListPresenter {
           this.#renderEmptyFilmList();
           return;
         }
-        this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
+        this.#renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
         this.#renderShowMoreBtn();
+        this.#renderAwardedFilms();
         break;
       default:
         throw new Error(`Unknown update type: ${updateType}`);

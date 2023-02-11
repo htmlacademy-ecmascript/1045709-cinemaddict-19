@@ -1,28 +1,26 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import FilmCardView from './film-card-view.js';
 
-const createTopRatedTemplate = (topRatedFilms) => (
+const createTopRatedTemplate = () => (
   `<section class="films-list films-list--extra">
       <h2 class="films-list__title">Top rated</h2>
 
       <div class="films-list__container">
-        ${topRatedFilms.map((film) => `
-          ${new FilmCardView({film}).template}
-        `)}
       </div>
     </section>`
 );
 
 export default class AwardTopRatedView extends AbstractView {
-  #topRatedFilms = null;
+  #topRatedFilmList = this.element.querySelector('.films-list__container');
 
-  constructor({topRatedFilms}) {
+  constructor({topRatedFilmsComponents}) {
     super();
-    this.#topRatedFilms = topRatedFilms;
+    topRatedFilmsComponents.forEach((filmComponent) => {
+      this.#topRatedFilmList.appendChild(filmComponent.element);
+    });
   }
 
   get template() {
-    return createTopRatedTemplate(this.#topRatedFilms);
+    return createTopRatedTemplate();
   }
 
 }

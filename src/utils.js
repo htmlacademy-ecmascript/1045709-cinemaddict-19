@@ -1,4 +1,18 @@
+import { render, replace, remove } from './framework/render.js';
 import dayjs from 'dayjs';
+
+const renderUpdatingComponent = (container, component, prevComponent) => {
+  if (prevComponent === null) {
+    render(component, container);
+    return;
+  }
+
+  if (container.contains(prevComponent.element)) {
+    replace(component, prevComponent);
+  }
+
+  remove(prevComponent);
+};
 
 const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.length)];
 
@@ -10,4 +24,4 @@ const isEscPressed = (evt) => evt.code === 'Escape';
 
 const isCtrlPlusEnterPressed = (evt) => evt.ctrlKey && evt.code === 'Enter';
 
-export { getRandomArrayElement, getTimeFromMins, humanizeDate, isEscPressed, isCtrlPlusEnterPressed };
+export { renderUpdatingComponent, getRandomArrayElement, getTimeFromMins, humanizeDate, isEscPressed, isCtrlPlusEnterPressed };

@@ -1,7 +1,8 @@
-import { remove, render, replace } from '../framework/render.js';
+import { remove } from '../framework/render.js';
+import { UpdateType, FilterType } from '../consts.js';
+import { renderUpdatingComponent } from '../utils.js';
 import UserRankView from '../view/user-rank-view.js';
 import FiltersView from '../view/filters-view.js';
-import { UpdateType, FilterType } from '../consts.js';
 
 export default class FiltersPresenter {
   #userRankContainer = null;
@@ -82,19 +83,8 @@ export default class FiltersPresenter {
       onFilterTypeChange: this.#handleFilterTypeChange
     });
 
-    if (prevUserRankComponent === null) {
-      render(this.#userRankComponent, this.#userRankContainer);
-    } else {
-      replace(this.#userRankComponent, prevUserRankComponent);
-      remove(prevUserRankComponent);
-    }
-
-    if (prevFilterComponent === null) {
-      render(this.#filterComponent, this.#filtersContainer);
-    } else {
-      replace(this.#filterComponent, prevFilterComponent);
-      remove(prevFilterComponent);
-    }
+    renderUpdatingComponent(this.#userRankContainer, this.#userRankComponent, prevUserRankComponent);
+    renderUpdatingComponent(this.#filtersContainer, this.#filterComponent, prevFilterComponent);
 
     if (watchedFilmsQuantity === 0) {
       remove(this.#userRankComponent);
