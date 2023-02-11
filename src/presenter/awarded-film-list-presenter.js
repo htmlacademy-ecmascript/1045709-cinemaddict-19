@@ -40,41 +40,34 @@ export default class AwardedFilmListPresenter {
   #initTopRatedFilms() {
     const filmsSortedByRating = [...this.#films].sort((a, b) => b.filmInfo.totalRating - a.filmInfo.totalRating);
     const topRatedFilms = this.#isFilmsSameRating() ? this.#getRandomFilmsToAward() : [filmsSortedByRating[0], filmsSortedByRating[1]];
-    const topRatedFilmsComponents = [];
-    this.#initAwardedFilmsCopmponents(topRatedFilms, topRatedFilmsComponents);
-    this.#renderTopRatedList(topRatedFilmsComponents);
+
+    const prevTopRatedComponent = this.#topRatedListComponent;
+    this.#topRatedListComponent = new AwardTopRatedView({ topRatedFilmsComponents: this.#initFilmsCopmponents(topRatedFilms) });
+
+    renderUpdatingComponent(this.#awardedFilmsContainer, this.#topRatedListComponent, prevTopRatedComponent);
   }
 
   #initMostCommentedFilms() {
     const filmsSortedByComments = [...this.#films].sort((a, b) => b.comments.length - a.comments.length);
     const mostCommentedFilms = this.#isFilmsSameCommentsQuantity() ? this.#getRandomFilmsToAward() : [filmsSortedByComments[0], filmsSortedByComments[1]];
-    const mostCommentedFilmsComponents = [];
-    this.#initAwardedFilmsCopmponents(mostCommentedFilms, mostCommentedFilmsComponents);
-    this.#renderMostCommentedList(mostCommentedFilmsComponents);
+
+    const prevMostCommentedListComponent = this.#mostCommentedListComponent;
+    this.#mostCommentedListComponent = new AwardMostCommentedView({ mostCommentedFilmsComponents: this.#initFilmsCopmponents(mostCommentedFilms) });
+
+    renderUpdatingComponent(this.#awardedFilmsContainer, this.#mostCommentedListComponent, prevMostCommentedListComponent);
   }
 
-  #initAwardedFilmsCopmponents(films, awardedFilmsComponents) {
-    const filmsPresenters = [this.#createAwardedFilmPresenter(), this.#createAwardedFilmPresenter()];
+  #initFilmsCopmponents(films) {
+    const components = [];
+    const filmsPresenters = [this.#createFilmPresenter(), this.#createFilmPresenter()];
 
     filmsPresenters.forEach((filmPresenter, index) => {
       filmPresenter.init(films[index], true);
-      awardedFilmsComponents.push(filmPresenter.filmComponent);
+      components.push(filmPresenter.filmComponent);
       this.filmPresenters.set(films[index].id, filmPresenter);
     });
-  }
 
-  #renderTopRatedList(topRatedFilmsComponents) {
-    const prevTopRatedComponent = this.#topRatedListComponent;
-    this.#topRatedListComponent = new AwardTopRatedView({ topRatedFilmsComponents });
-
-    renderUpdatingComponent(this.#awardedFilmsContainer, this.#topRatedListComponent, prevTopRatedComponent);
-  }
-
-  #renderMostCommentedList(mostCommentedFilmsComponents) {
-    const prevMostCommentedListComponent = this.#mostCommentedListComponent;
-    this.#mostCommentedListComponent = new AwardMostCommentedView({ mostCommentedFilmsComponents });
-
-    renderUpdatingComponent(this.#awardedFilmsContainer, this.#mostCommentedListComponent, prevMostCommentedListComponent);
+    return components;
   }
 
   #getRandomFilmsToAward() {
@@ -83,7 +76,7 @@ export default class AwardedFilmListPresenter {
     return secondRandomFilm === firstRandomFilm ? this.#getRandomFilmsToAward() : [firstRandomFilm, secondRandomFilm];
   }
 
-  #createAwardedFilmPresenter() {
+  #createFilmPresenter() {
     return new FilmPresenter({
       filmListContainer: this.#awardedFilmsContainer,
       awardedFilmsContainer: this.#awardedFilmsContainer,

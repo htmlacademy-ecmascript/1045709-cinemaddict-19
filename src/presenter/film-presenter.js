@@ -1,9 +1,8 @@
 import { remove } from '../framework/render.js';
-import FilmCardView from '../view/film-card-view.js';
-import FilmPopupPresenter from './film-popup-presenter.js';
 import { renderUpdatingComponent } from '../utils.js';
 import { UserAction, UpdateType } from '../consts.js';
-
+import FilmCardView from '../view/film-card-view.js';
+import FilmPopupPresenter from './film-popup-presenter.js';
 
 export default class FilmPresenter {
   #filmListContainer = null;
