@@ -1,28 +1,26 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import FilmCardView from './film-card-view.js';
 
-const createMostCommentedTemplate = (mostCommentedFilms) => (
+const createMostCommentedTemplate = () => (
   `<section class="films-list films-list--extra">
       <h2 class="films-list__title">Most commented</h2>
 
       <div class="films-list__container">
-        ${mostCommentedFilms.map((film) => `
-          ${new FilmCardView({film}).template}
-        `)}
       </div>
     </section>`
 );
 
 export default class AwardMostCommentedView extends AbstractView {
-  #mostCommentedFilms = null;
+  #mostCommentedFilmList = this.element.querySelector('.films-list__container');
 
-  constructor({mostCommentedFilms}) {
+  constructor({mostCommentedFilmsComponents}) {
     super();
-    this.#mostCommentedFilms = mostCommentedFilms;
+    mostCommentedFilmsComponents.forEach((filmComponent) => {
+      this.#mostCommentedFilmList.appendChild(filmComponent.element);
+    });
   }
 
   get template() {
-    return createMostCommentedTemplate(this.#mostCommentedFilms);
+    return createMostCommentedTemplate();
   }
 
 }

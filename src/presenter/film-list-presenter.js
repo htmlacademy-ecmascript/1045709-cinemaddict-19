@@ -12,7 +12,7 @@ import ShowMoreBtnView from '../view/show-more-btn-view.js';
 import QuantityStatisticsView from '../view/quantity-statistics-view.js';
 import FiltersPresenter from './filters-presenter.js';
 import FilmPresenter from './film-presenter.js';
-import AwardedFilmsPresenter from './awarded-films-presenter.js';
+import AwardedFilmListPresenter from './awarded-film-list-presenter.js';
 
 const DEFAULT_RENDERED_FILMS_QUANTITY = 5;
 const FILMS_TO_RENDER_QUANTITY = 5;
@@ -39,6 +39,7 @@ export default class FilmListPresenter {
 
   #filmPresenter = new Map();
   #filtersPresenter = null;
+  #awardedFilmListPresenter = null;
   #currentSortType = SortType.DEFAULT;
   #uiBlocker = new UiBlocker({
     lowerLimit: TimeLimit.LOWER_LIMIT,
@@ -79,7 +80,6 @@ export default class FilmListPresenter {
     this.#renderSort();
     this.#renderFilmsContainers();
     this.#renderLoading();
-    this.#renderAwardSection();
   }
 
   clearFilmList({resetSortType = false} = {}) {
@@ -173,12 +173,16 @@ export default class FilmListPresenter {
     render(this.#showMoreBtnComponent, this.#filmListComponent.element);
   }
 
-  #renderAwardSection() {
-    const awardedFilmsPresenter = new AwardedFilmsPresenter({
+  #renderAwardedFilms() {
+    this.#awardedFilmListPresenter = new AwardedFilmListPresenter({
       awardedFilmsContainer: this.#filmSectionComponent.element,
-      films: this.films
+      filmsModel: this.#filmsModel,
+      commentsModel: this.#commentsModel,
+      filterModel: this.#filterModel,
+      onDataChange: this.#handleViewAction
     });
-    awardedFilmsPresenter.init();
+
+    this.#awardedFilmListPresenter.init();
   }
 
   #renderQuantityStatistics() {
@@ -213,21 +217,24 @@ export default class FilmListPresenter {
             this.#renderEmptyFilmList();
           }
         } catch (err) {
-          this.#filmPresenter.get(update.id).setAborting(actionType);
+          this.#filmPresenter.get(update.id)?.setAborting(actionType);
+          this.#awardedFilmListPresenter.filmPresenters.get(update.id)?.setAborting(actionType);
         }
         break;
       case UserAction.ADD_COMMENT:
         try {
           await this.#commentsModel.addComment(updateType, update);
         } catch (error) {
-          this.#filmPresenter.get(update.filmId).setAborting(actionType);
+          this.#filmPresenter.get(update.filmId)?.setAborting(actionType);
+          this.#awardedFilmListPresenter.filmPresenters.get(update.filmId)?.setAborting(actionType);
         }
         break;
       case UserAction.DELETE_COMMENT:
         try {
           await this.#commentsModel.deleteComment(updateType, update);
         } catch (error) {
-          this.#filmPresenter.get(update.id).setAborting(actionType);
+          this.#filmPresenter.get(update.id)?.setAborting(actionType);
+          this.#awardedFilmListPresenter.filmPresenters.get(update.id)?.setAborting(actionType);
         }
         break;
       default:
@@ -240,7 +247,7 @@ export default class FilmListPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#filmPresenter.get(data.id).init(data);
+        this.#filmPresenter.get(data.id)?.init(data);
         break;
       case UpdateType.MINOR:
         this.clearFilmList();
@@ -259,6 +266,7 @@ export default class FilmListPresenter {
         }
         this.renderFilms(DEFAULT_RENDERED_FILMS_QUANTITY);
         this.#renderShowMoreBtn();
+        this.#renderAwardedFilms();
         break;
       default:
         throw new Error(`Unknown update type: ${updateType}`);

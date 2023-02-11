@@ -1,6 +1,7 @@
-import { render, replace, remove } from '../framework/render.js';
+import { remove } from '../framework/render.js';
 import FilmCardView from '../view/film-card-view.js';
 import FilmPopupPresenter from './film-popup-presenter.js';
+import { renderUpdatingComponent } from '../utils.js';
 import { UserAction, UpdateType } from '../consts.js';
 
 
@@ -22,7 +23,15 @@ export default class FilmPresenter {
     this.#handleUpdateFilmData = onDataChange;
   }
 
-  init(film) {
+  get filmComponent() {
+    return this.#filmComponent;
+  }
+
+  get popupPresenter() {
+    return this.#popupPresenter;
+  }
+
+  init(film, isAwardedFilm = false) {
     this.#film = film;
     this.#popupPresenter = new FilmPopupPresenter({
       film,
@@ -32,12 +41,6 @@ export default class FilmPresenter {
       handleDeleteComment: this.#handleDeleteComment
     });
 
-    const openedPopup = this.#popupPresenter.getOpenedPopup();
-
-    if (openedPopup) {
-      this.#popupPresenter.resetPopupComponent(openedPopup.filmPopupComponent, film);
-    }
-
     const prevFilmComponent = this.#filmComponent;
     this.#filmComponent = new FilmCardView({
       film,
@@ -45,13 +48,16 @@ export default class FilmPresenter {
       onControlBtnClick: this.#handleControlButton,
     });
 
-    if (prevFilmComponent === null) {
-      render(this.#filmComponent, this.#filmListContainer);
+    renderUpdatingComponent(this.#filmListContainer, this.#filmComponent, prevFilmComponent);
+
+    if (isAwardedFilm) {
       return;
     }
 
-    if (this.#filmListContainer.contains(prevFilmComponent.element)) {
-      replace(this.#filmComponent, prevFilmComponent);
+    const openedPopup = this.#popupPresenter.getOpenedPopup();
+
+    if (openedPopup) {
+      this.#popupPresenter.resetPopupComponent(openedPopup.filmPopupComponent, film);
     }
 
     remove(prevFilmComponent);
